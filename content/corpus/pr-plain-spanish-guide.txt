@@ -1,0 +1,107 @@
+SOURCE: La Mano — Puerto Rico Plain-Spanish Register Guide for Ayudafema
+VERSION: 1.0, April 2026
+PURPOSE: LLM prompt reference for PR-Spanish appeal drafting
+
+REGISTER: Puerto Rican Spanish (ES-PR), plain-language, tú form
+
+─── VOCABULARY RULES ────────────────────────────────────────────────────────
+
+USE                         AVOID
+──────────────────────────────────────────────────────────────────
+tú / tu casa                usted / su propiedad
+casa                        vivienda, inmueble, propiedad residencial
+dueño / ser dueño de        propietario (ok in legal templates), titular
+celular                     móvil, teléfono móvil
+recibo de luz / recibo      factura eléctrica, comprobante
+correo electrónico          e-mail, email
+apelación                   recurso, impugnación
+negación / me negaron       denegación, le fue denegado
+FEMA me negó                FEMA le fue negado el beneficio
+ayuda de FEMA               asistencia federal
+carta de negación           notificación de inelegibilidad
+escribir a mano             redactar manualmente
+enviar / mandar             remitir, hacer entrega
+necesitas, tienes que       se requiere, es necesario que
+puedes probar               se puede demostrar
+
+─── SENTENCE STRUCTURE ──────────────────────────────────────────────────────
+
+- Write in active voice. Subject → verb → object.
+  GOOD: "FEMA negó tu solicitud porque no verificó que eres dueño de la casa."
+  AVOID: "Tu solicitud fue negada por FEMA debido a la falta de verificación."
+
+- Use short sentences (15–20 words max in body paragraphs).
+  Complex legal citations can be longer but always follow with a plain gloss.
+
+- Use paragraph breaks between distinct ideas. One idea per paragraph in
+  explanatory sections.
+
+- When citing regulations, place the citation at the end in parentheses:
+  "La ley acepta declaraciones juradas como prueba de titularidad
+  (44 CFR § 206.111; 86 Fed. Reg. 31,553)."
+
+─── TONE ───────────────────────────────────────────────────────────────────
+
+- Warm but serious. Not pleading, not aggressive. Confident.
+- "Estoy apelando" not "humildemente solicito que reconsideren."
+- Address FEMA formally ("la Agencia", "FEMA") but your own client informally.
+- No "estimado señor/señora." Open with the standard legal salutation.
+
+─── PROHIBITED PHRASES (ban list) ──────────────────────────────────────────
+
+The following strings must NOT appear in any user-facing copy or draft:
+- usted (except in direct legal quotes)
+- móvil
+- vivienda (except in direct regulatory quotes; use "casa")
+- estimado usuario
+- nuestros servicios
+- le fue negado (use "te negaron" or "FEMA negó")
+- bienvenido
+- plataforma
+- propietario (in casual context; ok in legal template headers)
+- el suscrito / la suscrita (dated formalism)
+
+─── FEMA-SPECIFIC PHRASES ───────────────────────────────────────────────────
+
+Standard salutation for appeal letters:
+"A quien corresponda:"
+
+Standard opening sentence:
+"Por medio de esta carta, [Nombre], solicitud número [FEMA#], apelo la
+decisión de FEMA de negar mi solicitud de Asistencia Individual para el
+Desastre [DR-XXXX-PR]."
+
+Standard closing:
+"En espera de su reconsideración, quedo atenta/atento a cualquier
+comunicación adicional que requieran."
+
+Sign-off phrase:
+"Respetuosamente,"
+
+─── EVIDENCE NAMING CONVENTIONS ─────────────────────────────────────────────
+
+USE THESE EXACT TERMS when referring to evidence types:
+- foto de la casa (not "evidencia fotográfica")
+- recibo de servicios (not "comprobante de domicilio")
+- carta del municipio (not "certificación municipal")
+- declaración jurada (not "affidávit" — though affidávit is understood)
+- escritura (ok, if they have one; most won't)
+- herencia (when ownership passed informally through family)
+
+─── CULTURAL CONTEXT FOR LLM ────────────────────────────────────────────────
+
+- Many PR homes were built informally (without permits or recorded title).
+  This is called "construcción sin título" or "herencia no formalizada."
+  Do not treat this as evidence of fraud; it is normal in PR.
+
+- Addresses in PR often lack street numbers or use rural route designations
+  (e.g., "Bo. Río Grande, Carr. 956 Km. 4.2, Yabucoa PR"). This is normal.
+
+- "Municipio" refers to the local government (like a city hall). In PR,
+  the municipio can issue letters confirming residency.
+
+- "Recibo de luz" (electricity bill from AEE/LUMA) is the most common
+  occupancy proof for PR residents.
+
+- Many applicants are elderly or have low literacy. Keep explanatory
+  language at a 6th-grade reading level. Use real examples, not abstractions.

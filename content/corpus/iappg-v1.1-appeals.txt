@@ -1,0 +1,71 @@
+SOURCE: Individual Assistance Program and Policy Guide (IAPPG), Version 1.1, May 2021
+SECTION: Chapter V — Appeals and Duplication of Benefits
+LICENSE: Public domain (FEMA public document)
+
+IAPPG v1.1 § V.A — General Appeal Policies
+
+Applicants who receive an ineligibility determination or disagree with the amount of assistance provided may appeal that decision. The appeal must be filed within 60 days of the date of the decision letter.
+
+FEMA will only consider new information that the applicant provides in support of the appeal. FEMA will not consider information that was already reviewed when the initial eligibility determination was made, unless the applicant provides a compelling reason why such information should be reconsidered.
+
+IAPPG v1.1 § V.B — Appeal Requirements
+
+The applicant must submit a written appeal to FEMA within 60 days of receiving notification of the initial determination. The 60-day period begins on the date of the decision letter, not the date of receipt.
+
+The written appeal must:
+1. Identify the specific determination being appealed;
+2. Explain why the applicant believes the determination is incorrect;
+3. Include any supporting documentation.
+
+FEMA accepts appeals submitted by mail, fax, or online through the Disaster Assistance website.
+
+IAPPG v1.1 § V.C — Ownership Appeals (Denial Code 120)
+
+When an applicant is denied due to failure to verify ownership (Code 120), the appeal should include documentation that establishes the applicant's ownership interest in the damaged property.
+
+Acceptable forms of ownership documentation include:
+- Deed, mortgage, or title documents
+- Property tax records or receipts showing applicant's name
+- Insurance policies listing the applicant as the insured homeowner
+- Court documents establishing ownership (probate, inheritance)
+- A notarized statement from a person with direct knowledge of ownership
+- A self-certification by the applicant (sworn statement)
+
+FEMA recognizes that in some disaster-affected communities, including Puerto Rico, many residents lack formal title documentation due to historical, cultural, or socioeconomic factors. In such cases, FEMA reviewers are instructed to give substantial weight to alternative documentation.
+
+IAPPG v1.1 § V.D — Occupancy Appeals (Denial Code 203)
+
+When an applicant is denied due to failure to verify occupancy (Code 203), the appeal should include documentation that establishes the damaged residence as the applicant's primary residence.
+
+Acceptable forms of occupancy documentation include:
+- Utility bills (electric, water, gas, internet) in applicant's name at the address
+- Bank statements showing the address
+- Government-issued identification showing the address
+- Lease or rental agreement
+- Signed statement from a landlord or neighbor
+- USPS mail delivery confirmation to the address
+- School records for children at the address
+
+IAPPG v1.1 § V.D.1 — Alternative Occupancy Documentation for Puerto Rico
+
+Following the 2017 and 2022 disaster declarations for Puerto Rico, FEMA implemented expanded alternative documentation policies to address the unique housing circumstances in Puerto Rico. These include:
+
+1. Sworn neighbor affidavits: A notarized statement from a neighbor who can attest to the applicant's residency is accepted as primary proof of occupancy.
+
+2. Municipal letters: A letter from the mayor's office or municipal government confirming the applicant's residency is accepted.
+
+3. Community leader statements: Written statements from recognized community leaders (pastors, community board presidents, etc.) are given significant weight.
+
+FEMA reviewers for Puerto Rico disaster declarations are specifically trained to apply a flexible documentation standard consistent with the Disaster Recovery Reform Act of 2018.
+
+IAPPG v1.1 § V.E — Duplication of Benefits (Denial Code 204)
+
+FEMA is prohibited by the Stafford Act from providing assistance that would duplicate benefits from another source. Common duplication scenarios include:
+- Insurance settlements that cover the same need
+- SBA loans for the same damage
+- Other federal or state assistance for the same need
+
+When appealing a duplication of benefits denial, the applicant should provide documentation showing that:
+1. The other benefit does not cover the same disaster-related need, OR
+2. The other benefit has been exhausted or is insufficient, OR
+3. The other benefit has not been received (provide a denial letter from the other source).

@@ -1,0 +1,40 @@
+SOURCE: Disaster Recovery Reform Act of 2018 (DRRA), § 1212; 86 Fed. Reg. 31,553 (June 14, 2021)
+LICENSE: Public domain (federal statute and federal register)
+
+DRRA § 1212 — Alternative Procedures for Proof of Residency and Ownership
+
+(a) In General.— Notwithstanding any other provision of law, in the case of a major disaster declared under section 401 of the Robert T. Stafford Disaster Relief and Emergency Assistance Act (42 U.S.C. 5170), the President shall—
+
+(1) maintain flexibility regarding the types of documentation that may be accepted from individuals and households applying for assistance under section 408 of such Act (42 U.S.C. 5174), to include alternative documentation where traditional proof of ownership or occupancy is unavailable; and
+
+(2) ensure that the policies and procedures of the Federal Emergency Management Agency do not unnecessarily exclude individuals from receiving assistance.
+
+(b) Regulations.— Not later than 180 days after the date of enactment of this Act, the President shall promulgate regulations to implement this section.
+
+86 Fed. Reg. 31,553 (June 14, 2021) — Amendments to FEMA's Individual Assistance Program
+
+Excerpts relevant to ownership documentation and Puerto Rico:
+
+"FEMA is amending its Individual Assistance regulations to provide flexibility in the types of documentation that FEMA accepts when verifying ownership and occupancy of damaged property. These amendments respond to the Disaster Recovery Reform Act of 2018 and to lessons learned from major disaster responses, particularly Hurricane Maria (DR-4339-PR, 2017)."
+
+"FEMA will now accept a broader range of documentation to establish ownership, including:
+(1) Self-certification by the applicant in the form of a written, sworn statement;
+(2) Notarized statements from persons with direct knowledge of ownership;
+(3) Any other documentation that reasonably establishes ownership under applicable state law."
+
+"FEMA recognizes that in Puerto Rico and other affected communities, many residences were built or transferred informally, without formal recorded title. This is particularly common in rural areas and in communities where property has passed through multiple generations via informal inheritance ('herencias'). FEMA reviewers are instructed to apply a liberal standard when evaluating alternative ownership documentation for Puerto Rico disaster declarations."
+
+"The 60-day appeal window runs from the date of the eligibility decision letter. Applicants who received denial letters based on the pre-amendment documentation standards may file appeals under the amended, more flexible standards."
+
+REGULATORY CITATIONS FOR APPEALS (use these verbatim in appeal letters):
+
+Primary citations:
+- 44 CFR § 206.111 (definition of "ownership" — includes substantial investment, heirs, alternative forms of title)
+- 44 CFR § 206.114 (appeal procedures — 60-day window, written appeal, supporting documentation)
+- IAPPG v1.1 § V.D.1 (alternative documentation procedures for Puerto Rico)
+- DRRA § 1212 (statutory authority for flexible documentation)
+- 86 Fed. Reg. 31,553 (June 14, 2021) (implementing regulations for alternative documentation)
+
+Supporting references:
+- Stafford Act § 408 (42 U.S.C. § 5174) (Individual Assistance program authority)
+- 42 U.S.C. § 5155 (prohibition on duplication of benefits)

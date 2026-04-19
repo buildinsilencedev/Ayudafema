@@ -229,17 +229,46 @@ export async function getDraft(caseId, version) {
 }
 
 /**
- * Request a draft.
+ * Request a draft by invoking the draftAppeal edge function.
  *
- * M2 STUB: inserts the static appeal template directly so Draft
- * screen renders during transition. M4 replaces this with a call
- * to the draftAppeal edge function.
+ * The edge function generates ES + EN appeal bodies with real LLM
+ * (Sonnet or Opus via OpenRouter), RAG context from knowledge_base,
+ * and citation validation. Advances case status → 'under_review'.
+ *
+ * Falls back to the static template if the edge function is
+ * unavailable (e.g. no Supabase project in dev / integration tests).
  *
  * @param {string} caseId
  * @returns {Promise<import('../types.js').Draft>}
  */
 export async function requestDraft(caseId) {
-  // M2 stub — pull case vars to fill template
+  // Invoke the real draftAppeal edge function
+  const { data, error } = await supabase.functions.invoke('draftAppeal', {
+    body: { caseId },
+  })
+
+  if (error) {
+    // Edge function unavailable — fall back to static template so
+    // the Draft screen still renders in dev/demo mode.
+    console.warn('[api/requestDraft] draftAppeal unavailable, using static stub:', error.message)
+    return _requestDraftStub(caseId)
+  }
+
+  // Edge function succeeded — fetch the newly inserted draft row
+  if (data?.draftId) {
+    const draft = await getDraft(caseId)
+    if (draft) return draft
+  }
+
+  // Fallback if we can't retrieve the newly inserted row
+  return _requestDraftStub(caseId)
+}
+
+/**
+ * Static-template fallback for dev/demo/test environments.
+ * @internal
+ */
+async function _requestDraftStub(caseId) {
   const caseRow = await getCase(caseId)
   const vars = {
     caseId:       caseRow.id.slice(0, 8).toUpperCase(),
@@ -247,8 +276,6 @@ export async function requestDraft(caseId) {
     disasterCode: caseRow.disaster_code  ?? 'DR-XXXX-PR',
     disasterName: caseRow.disaster_name  ?? '[Nombre del desastre]',
   }
-
-  // Get the next version number
   const existing = await getDraft(caseId)
   const version  = (existing?.version ?? 0) + 1
 
@@ -260,11 +287,11 @@ export async function requestDraft(caseId) {
         version,
         body_es:  appealOwnership.es(vars),
         body_en:  appealOwnership.en(vars),
-        model:    'static-m2-stub',
+        model:    'static-stub',
       })
       .select()
       .single(),
-    'requestDraft'
+    'requestDraft/stub'
   )
 }
 

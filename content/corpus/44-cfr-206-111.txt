@@ -1,0 +1,59 @@
+SOURCE: 44 CFR § 206.111 — Definitions (Individual Assistance)
+UPDATED: 2024-01 (current)
+LICENSE: Public domain (federal regulation)
+
+44 CFR § 206.111  Definitions.
+
+As used in this subpart—
+
+Applicant means a person who has applied for assistance under this subpart.
+
+Dependent means any person who is claimed as a dependent on a Federal income tax return; or a person who is unable to provide self-support as a result of physical or mental disability, such as minor children or elderly parents.
+
+Disaster means any natural catastrophe (including any hurricane, tornado, storm, high water, winddriven water, tidal wave, tsunami, earthquake, volcanic eruption, landslide, mudslide, snowstorm, or drought), or, regardless of cause, any fire, flood, or explosion, in any part of the United States, which in the determination of the President causes damage of sufficient severity and magnitude to warrant major disaster assistance under this Act to supplement the efforts and available resources of States, local governments, and disaster relief organizations in alleviating the damage, loss, hardship, or suffering caused thereby.
+
+Disaster-related need means a need that is in a category of assistance defined in subparts E and F of this part, that was directly caused by the effects of a major disaster, and for which no other source of financial assistance is available to meet that need.
+
+Household means any individual or group of individuals who are currently living together in a pre-disaster residence as a family unit. For purposes of this subpart, a household has only one physical mailing address.
+
+Occupancy means that the residence is the individual's primary residence, and the individual was physically present at the residence at the time of the disaster or was temporarily absent at the time of the disaster due to military service, hospitalization, evacuation, or other circumstances beyond the individual's control.
+
+Ownership means that the individual holds title to the property (including a mobile home); OR is purchasing the property under contract; OR has made a substantial investment in the property (e.g., an heir of an estate, even though legal title has not transferred to the heir); OR owns the property under applicable State law, even if legal title is held in another form.
+
+44 CFR § 206.112  Basic assistance policies.
+
+(a) Assistance is available to individuals and households to meet disaster-related necessary expenses and serious needs that are not met by insurance, other federal or state programs, or voluntary agencies.
+
+(b) FEMA must accept documentation of ownership in the form of:
+(1) Deed or mortgage documents;
+(2) Tax receipts or tax bill;
+(3) Receipts for major repairs or improvements;
+(4) Utility bills in the applicant's name;
+(5) Mobile home registration documents;
+(6) Notarized letter from a person with knowledge of the applicant's ownership;
+(7) Any other document that reasonably shows ownership.
+
+44 CFR § 206.113  Specific categories of housing assistance.
+
+(a) Temporary housing assistance. FEMA may provide financial or direct temporary housing assistance to individuals and households who, as a result of a major disaster, have a disaster-related necessary expense or serious need and who are not able to meet such need through insurance, other federal or state programs, or voluntary agencies.
+
+(b) Home repair assistance. FEMA may provide financial assistance to eligible homeowners to repair or restore owner-occupied primary residences damaged by a major disaster to a safe and sanitary living or functioning condition.
+
+44 CFR § 206.114  Appeal of adverse decisions.
+
+(a) Any individual who applies for assistance and believes an eligibility or assistance decision made by the Agency is incorrect may appeal that decision.
+
+(b) An applicant must file an appeal in writing within 60 days after receiving notification of the eligibility decision or the assistance determination.
+
+(c) The appeal must include:
+(1) The applicant's full name, pre-disaster address, and FEMA registration number;
+(2) A copy of the original eligibility decision;
+(3) A written explanation of why the applicant believes the decision was incorrect;
+(4) Any documentation that supports the applicant's position.
+
+(d) The Regional Administrator or designee shall issue a written decision within 90 days of receipt of the appeal. The decision is final and not subject to further administrative appeal.
+
+(e) The applicant's disaster-related need must have existed at the time of the disaster and must still exist at the time of appeal.
+
+NOTES ON ALTERNATIVE OWNERSHIP DOCUMENTATION:
+Per FEMA policy and 86 Fed. Reg. 31,553 (June 14, 2021), FEMA accepts sworn statements and notarized affidavits as proof of ownership when traditional title documents are not available. This is particularly relevant for Puerto Rico where approximately 35% of homes lack formal recorded title due to historical inheritance patterns ("herencias") and informal construction. FEMA regional policy for Puerto Rico explicitly recognizes this situation and instructs reviewers to accept alternative documentation.
