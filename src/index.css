@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #f6f2ea;
+  --paper-edge: #ede6d8;
+  --ink: #1a1613;
+  --ink-soft: #3d362e;
+  --ink-softer: #5d5246;
+  --rule: #d9cfbc;
+  --accent: #8a2a1e;
+  --accent-soft: #e8d7d1;
+  --ok: #2e5538;
+}
+/* --ink-soft and --ink-softer tightened from #4a423a/#7a6f62 so body text and
+   uppercase labels clear 4.5:1 contrast on --paper. WCAG 2.1 AA. */
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.hog-app {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+.hog-serif {
+  font-family: 'Instrument Serif', 'Iowan Old Style', 'Apple Garamond', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.hog-mono {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-weight: 400;
+}
+
+.hog-grain {
+  background-image: radial-gradient(circle at 1px 1px, rgba(26, 22, 19, 0.025) 1px, transparent 0);
+  background-size: 3px 3px;
+}
+
+.hog-rule {
+  height: 1px;
+  background: var(--rule);
+}
+
+.hog-btn-primary {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: background-color 200ms ease;
+}
+.hog-btn-primary:hover:not(:disabled) {
+  background: var(--accent);
+}
+
+.hog-btn-ghost {
+  color: var(--ink-soft);
+  transition: color 200ms ease;
+}
+.hog-btn-ghost:hover {
+  color: var(--accent);
+}
+
+/* Visible, consistent focus ring. Keyboard users only — mouse clicks stay
+   quiet. Uses --accent so the ring shows up clearly against --paper. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.hog-skip-link {
+  position: absolute;
+  top: -9999px;
+  left: 0;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 16px;
+  font-size: 14px;
+  z-index: 100;
+}
+.hog-skip-link:focus {
+  top: 0;
+}
+
+.hog-fade {
+  animation: hogFadeIn 500ms ease-out;
+}
+@keyframes hogFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hog-letter {
+  background: #fffdf7;
+  border: 1px solid var(--paper-edge);
+  box-shadow:
+    0 1px 0 rgba(26, 22, 19, 0.04),
+    0 24px 48px -24px rgba(26, 22, 19, 0.15);
+}
+
+.hog-pulse {
+  animation: hogPulse 1.4s ease-in-out infinite;
+}
+@keyframes hogPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.hog-caret {
+  display: inline-block;
+  width: 0.4em;
+  height: 1em;
+  background: var(--ink);
+  vertical-align: text-bottom;
+  animation: hogBlink 1s steps(2) infinite;
+}
+@keyframes hogBlink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Respect OS-level motion preferences. CSS-driven animations are zeroed out;
+   Processing screen shortens its JS timeout via usePrefersReducedMotion too. */
+@media (prefers-reduced-motion: reduce) {
+  .hog-fade,
+  .hog-pulse,
+  .hog-caret {
+    animation: none !important;
+  }
+  .hog-btn-primary,
+  .hog-btn-ghost {
+    transition: none !important;
+  }
+  .hog-caret {
+    opacity: 1;
+  }
+}
