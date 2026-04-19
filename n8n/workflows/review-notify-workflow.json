@@ -1,0 +1,59 @@
+{
+  "name": "review-notify-workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "review-approved",
+        "responseMode": "responseNode"
+      },
+      "name": "Review Approved Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/cases?id=eq.{{ $json.caseId }}&select=user_id,applicant_name,denial_letter_date",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            { "name": "apikey",        "value": "={{ $env.SUPABASE_ANON_KEY }}" },
+            { "name": "Authorization", "value": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" }
+          ]
+        }
+      },
+      "name": "Get Case",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/sendSMS",
+        "body": {
+          "mode": "json",
+          "jsonBody": "={ \"caseId\": \"{{ $('Review Approved Trigger').json.caseId }}\", \"body\": \"Tu apelación fue revisada por un abogado y está lista para enviar a FEMA. Entra a ayudafema.org para el último paso.\" }"
+        }
+      },
+      "name": "Notify User Appeal Ready",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"notified\": true }"
+      },
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Review Approved Trigger": { "main": [[{ "node": "Get Case",               "type": "main", "index": 0 }]] },
+    "Get Case":                { "main": [[{ "node": "Notify User Appeal Ready","type": "main", "index": 0 }]] },
+    "Notify User Appeal Ready":{ "main": [[{ "node": "Respond OK",             "type": "main", "index": 0 }]] }
+  }
+}

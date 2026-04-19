@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test + build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run vitest
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL:      ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SITE_URL:          ${{ secrets.VITE_SITE_URL }}
+          VITE_SENTRY_DSN:        ${{ secrets.VITE_SENTRY_DSN }}
+
+      - name: Check for leaked secrets in bundle
+        run: |
+          if grep -rE '(sk-|eyJ[a-zA-Z0-9]{10,}|supabase_service_role)' dist/ 2>/dev/null | grep -v '.map'; then
+            echo "ERROR: Possible secret found in bundle" && exit 1
+          fi
+          echo "Secret scan: clean"
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+      - uses: github/codeql-action/autobuild@v3
+      - uses: github/codeql-action/analyze@v3

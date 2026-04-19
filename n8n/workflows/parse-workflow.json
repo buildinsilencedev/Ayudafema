@@ -1,0 +1,88 @@
+{
+  "name": "parse-workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "parse-trigger",
+        "responseMode": "responseNode"
+      },
+      "name": "Parse Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/parseDenialLetter",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "body": {
+          "mode": "json",
+          "jsonBody": "={ \"caseId\": \"{{ $json.caseId }}\", \"documentId\": \"{{ $json.documentId }}\" }"
+        },
+        "options": { "timeout": 30000 }
+      },
+      "name": "Parse Denial Letter",
+      "type": "n8n-nodes-base.httpRequest",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.overallConfidence }}",
+              "operation": "largerEqual",
+              "value2": 0.8
+            }
+          ]
+        }
+      },
+      "name": "High Confidence?",
+      "type": "n8n-nodes-base.if",
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/sendSMS",
+        "body": {
+          "mode": "json",
+          "jsonBody": "={ \"caseId\": \"{{ $('Parse Trigger').json.caseId }}\", \"body\": \"Tu carta fue procesada. Revisa tu apelación en ayudafema.org — Responde STOP para no recibir mensajes.\" }"
+        }
+      },
+      "name": "Notify Low Confidence",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [900, 420]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"ok\", \"confidence\": \"{{ $json.overallConfidence }}\" }"
+      },
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [900, 180]
+    }
+  ],
+  "connections": {
+    "Parse Trigger":         { "main": [[{ "node": "Parse Denial Letter", "type": "main", "index": 0 }]] },
+    "Parse Denial Letter":   { "main": [[{ "node": "High Confidence?",    "type": "main", "index": 0 }]] },
+    "High Confidence?":      {
+      "main": [
+        [{ "node": "Respond OK",            "type": "main", "index": 0 }],
+        [{ "node": "Notify Low Confidence", "type": "main", "index": 0 }]
+      ]
+    }
+  }
+}

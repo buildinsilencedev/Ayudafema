@@ -1,0 +1,71 @@
+{
+  "name": "submit-notify-workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "submission-recorded",
+        "responseMode": "responseNode"
+      },
+      "name": "Submission Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/sendSMS",
+        "body": {
+          "mode": "json",
+          "jsonBody": "={ \"caseId\": \"{{ $json.caseId }}\", \"body\": \"Recibimos tu apelación. FEMA tiene 90 días para responder. Te avisamos si hay novedades. Ayuda Legal PR: 1-800-981-5342\" }"
+        }
+      },
+      "name": "Confirmation SMS",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "days"
+      },
+      "name": "Wait 30 Days",
+      "type": "n8n-nodes-base.wait",
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/sendSMS",
+        "body": {
+          "mode": "json",
+          "jsonBody": "={ \"caseId\": \"{{ $('Submission Trigger').json.caseId }}\", \"body\": \"Han pasado 30 días desde que enviaste tu apelación. FEMA tiene hasta 90 días para responder. ¿Tienes novedades? Llama al 1-800-981-5342.\" }"
+        }
+      },
+      "name": "T+30 Follow-up SMS",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"queued\": true }"
+      },
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [460, 480]
+    }
+  ],
+  "connections": {
+    "Submission Trigger": {
+      "main": [
+        [
+          { "node": "Confirmation SMS", "type": "main", "index": 0 },
+          { "node": "Respond OK",       "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Confirmation SMS":   { "main": [[{ "node": "Wait 30 Days",      "type": "main", "index": 0 }]] },
+    "Wait 30 Days":       { "main": [[{ "node": "T+30 Follow-up SMS", "type": "main", "index": 0 }]] }
+  }
+}

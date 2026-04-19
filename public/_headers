@@ -1,0 +1,12 @@
+/*
+  # Security headers — applied to all responses from Cloudflare Pages
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=self, microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+
+  # CSP — tight for production
+  # script-src 'self': Vite bundles everything into /assets/*.js
+  # connect-src: Supabase API + Supabase Realtime
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self';

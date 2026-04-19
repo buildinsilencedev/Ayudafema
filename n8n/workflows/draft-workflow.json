@@ -1,0 +1,85 @@
+{
+  "name": "draft-workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "*/5 * * * *" }]
+        }
+      },
+      "name": "Poll Drafting Cases",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/rpc/get_cases_needing_draft",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            { "name": "apikey",        "value": "={{ $env.SUPABASE_ANON_KEY }}" },
+            { "name": "Authorization", "value": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" }
+          ]
+        }
+      },
+      "name": "Get Drafting Cases",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body",
+        "options": {}
+      },
+      "name": "Split Cases",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/draftAppeal",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "body": {
+          "mode": "json",
+          "jsonBody": "={ \"caseId\": \"{{ $json.id }}\" }"
+        },
+        "options": { "timeout": 60000 }
+      },
+      "name": "Draft Appeal",
+      "type": "n8n-nodes-base.httpRequest",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/sendSMS",
+        "body": {
+          "mode": "json",
+          "jsonBody": "={ \"caseId\": \"{{ $('Split Cases').json.id }}\", \"body\": \"Tu apelación fue preparada y está siendo revisada por un abogado de Ayuda Legal PR. Te avisamos cuando esté lista.\" }"
+        }
+      },
+      "name": "Notify User Draft Ready",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Poll Drafting Cases":    { "main": [[{ "node": "Get Drafting Cases",      "type": "main", "index": 0 }]] },
+    "Get Drafting Cases":     { "main": [[{ "node": "Split Cases",             "type": "main", "index": 0 }]] },
+    "Split Cases":            { "main": [[{ "node": "Draft Appeal",            "type": "main", "index": 0 }]] },
+    "Draft Appeal":           { "main": [[{ "node": "Notify User Draft Ready", "type": "main", "index": 0 }]] }
+  }
+}

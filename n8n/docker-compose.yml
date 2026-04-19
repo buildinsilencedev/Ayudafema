@@ -1,0 +1,38 @@
+version: '3.8'
+
+# n8n on Railway — ayudafema.org orchestration layer
+# See: https://docs.n8n.io/hosting/installation/server-setups/docker-compose/
+#
+# Env vars (set in Railway dashboard, NOT committed here):
+#   N8N_BASIC_AUTH_USER
+#   N8N_BASIC_AUTH_PASSWORD
+#   SUPABASE_URL
+#   SUPABASE_SERVICE_ROLE_KEY
+#   SUPABASE_ANON_KEY
+#   TWILIO_FROM_NUMBER
+#   N8N_WEBHOOK_URL            (e.g. https://n8n.ayudafema.org)
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+      - N8N_HOST=${N8N_HOST:-0.0.0.0}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=${N8N_WEBHOOK_URL}
+      - GENERIC_TIMEZONE=America/Puerto_Rico
+      - TZ=America/Puerto_Rico
+      # Persist workflows in Railway volume
+      - N8N_USER_FOLDER=/home/node/.n8n
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./workflows:/home/node/.n8n/workflows:ro
+
+volumes:
+  n8n_data:

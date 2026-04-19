@@ -1,0 +1,76 @@
+{
+  "name": "sms-reminder-workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 * * * *" }]
+        }
+      },
+      "name": "Hourly Cron",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/scheduleReminders",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "body": { "mode": "json", "jsonBody": "{}" },
+        "options": { "timeout": 30000 }
+      },
+      "name": "Run scheduleReminders",
+      "type": "n8n-nodes-base.httpRequest",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 10000,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            { "value1": "={{ $json.errors }}", "operation": "larger", "value2": 0 }
+          ]
+        }
+      },
+      "name": "Any Errors?",
+      "type": "n8n-nodes-base.if",
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/workflow_failures",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headers": {
+          "parameters": [
+            { "name": "apikey",        "value": "={{ $env.SUPABASE_ANON_KEY }}" },
+            { "name": "Authorization", "value": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "body": {
+          "mode": "json",
+          "jsonBody": "={ \"workflow\": \"sms-reminder\", \"payload\": {{ $json }}, \"error\": \"errors={{ $json.errors }}\" }"
+        }
+      },
+      "name": "Log to DLQ",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [900, 420]
+    }
+  ],
+  "connections": {
+    "Hourly Cron":           { "main": [[{ "node": "Run scheduleReminders", "type": "main", "index": 0 }]] },
+    "Run scheduleReminders": { "main": [[{ "node": "Any Errors?",           "type": "main", "index": 0 }]] },
+    "Any Errors?":           { "main": [[], [{ "node": "Log to DLQ",        "type": "main", "index": 0 }]] }
+  }
+}
