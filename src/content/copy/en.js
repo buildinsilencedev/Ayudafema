@@ -71,6 +71,7 @@ export const en = {
     upload: 'Upload file',
     reassure: 'Your documents are private. No one else sees them.',
     demo: 'Use demo letter',
+    manualEntry: 'Enter details by hand',
     fileInputLabel: 'Select denial letter',
   },
 
@@ -85,6 +86,39 @@ export const en = {
     ],
   },
 
+  login: {
+    step: 'Your account',
+    headline: 'Sign in to\nsave your case',
+    sub: "We'll send you a link by email. No password needed.",
+    emailLabel: 'Your email address',
+    emailPlaceholder: 'you@example.com',
+    cta: 'Send me the link',
+    sending: 'Sending\u2026',
+    sentHeadline: 'Check your email',
+    sentSub: 'We sent a link to {email}. Tap it to continue.',
+    sentNote: "If you don't see it, check your spam folder.",
+    privacy: 'We only store what\u2019s needed for your appeal. You can delete everything at any time.',
+  },
+
+  manualEntry: {
+    step: 'Letter details',
+    headline: 'Enter the\ndetails by hand',
+    sub: "We couldn't read the photo automatically. Enter the date and code from your letter.",
+    dateLabel: 'Date of denial letter',
+    codeLabel: 'Denial code',
+    code120: '120 \u2014 Ownership not verified',
+    code203: '203 \u2014 Occupancy not verified',
+    code204: '204 \u2014 Duplication of benefits',
+    codeOther: 'Other / I don\u2019t know',
+    nameLabel: 'Your name (optional)',
+    namePlaceholder: 'As it appears on the letter',
+    daysLeft: '{n} days to appeal',
+    overdue: 'Appeal deadline has passed',
+    unsupportedCode: "We can't prepare this appeal automatically yet. Call Ayuda Legal PR: 1-800-981-5342.",
+    cta: 'Continue',
+    saving: 'Saving\u2026',
+  },
+
   diagnosis: {
     step: 'Step 2 of 5',
     headline: "Here's what\nwe found",
@@ -95,6 +129,7 @@ export const en = {
     daysLeft: 'days left',
     deadlineDate: 'due',
     overdue: 'Deadline passed',
+    noDate: 'Date not available',
     reasonPlain: "FEMA says you didn't prove you own the house.",
     reasonContext:
       "This is the most common denial in Puerto Rico. 35% of homes don't have formal title. It's appealable, and FEMA accepts other ways to prove ownership — you don't need a deed.",
@@ -123,6 +158,7 @@ export const en = {
     previewLabel: 'Letter preview',
     letterAriaLabel: 'Appeal letter draft',
     switchTo: 'Ver en español',
+    generating: 'Preparing your letter\u2026',
     cta: 'Send to FEMA',
     disclaimer:
       'Appeals are sent in English because FEMA processes English faster. We keep the Spanish version for you.',

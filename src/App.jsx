@@ -2,11 +2,16 @@ import { useEffect, useState } from 'react'
 import { copy } from './content/copy/index.js'
 import { useRoute, STEPS } from './lib/router.js'
 import { loadState, saveState, clearState, getConsent, CONSENT_STATES } from './lib/persistence.js'
+import { useAuth } from './hooks/useAuth.js'
+import { useCase } from './hooks/useCase.js'
+import { createCase } from './lib/api.js'
 import { Header, Footer } from './components/Layout.jsx'
 import { ConsentBanner } from './components/ConsentBanner.jsx'
 import { ErrorBoundary } from './components/ErrorBoundary.jsx'
 import { Landing } from './screens/Landing.jsx'
+import { Login } from './screens/Login.jsx'
 import { Upload } from './screens/Upload.jsx'
+import { ManualEntry } from './screens/ManualEntry.jsx'
 import { Processing } from './screens/Processing.jsx'
 import { Diagnosis } from './screens/Diagnosis.jsx'
 import { Evidence } from './screens/Evidence.jsx'
@@ -14,49 +19,87 @@ import { Draft } from './screens/Draft.jsx'
 import { Submit } from './screens/Submit.jsx'
 import { Tracking } from './screens/Tracking.jsx'
 
-function initialWizardState() {
-  const persisted = loadState()
+function initialWizardState(persisted) {
   return {
-    evidence: persisted?.evidence ?? {},
+    evidence:   persisted?.evidence   ?? {},
     appealLang: persisted?.appealLang ?? 'en',
   }
 }
 
 export default function App() {
-  const [route, navigate] = useRoute()
-  const [wizard, setWizard] = useState(initialWizardState)
-  const [consentGen, setConsentGen] = useState(0) // bump when user toggles consent
+  const [route, navigate]   = useRoute()
+  const { user, loading: authLoading } = useAuth()
+  const { caseData }        = useCase(route.caseId)
+  const [wizard, setWizard] = useState(() => initialWizardState(loadState()))
+  const [consentGen, setConsentGen] = useState(0)
 
   const t = copy[route.lang] ?? copy.es
 
-  // Keep <html lang> in sync so screen readers switch voice correctly.
+  // Keep <html lang> in sync so screen readers announce the right language.
   useEffect(() => {
     document.documentElement.lang = route.lang === 'es' ? 'es-PR' : 'en-US'
   }, [route.lang])
 
-  // Persist wizard state when consent is granted.
+  // Persist wizard state whenever it changes and consent is granted.
   useEffect(() => {
     if (getConsent() === CONSENT_STATES.GRANTED) {
       saveState(wizard)
     }
   }, [wizard, consentGen])
 
-  const go = (step) => navigate({ step })
+  // ─── Navigation helpers ────────────────────────────────────────────────────
+
+  const go = (step, extras = {}) =>
+    navigate({ step, caseId: route.caseId, ...extras })
 
   const onBack = () => {
     const idx = STEPS.indexOf(route.step)
-    if (route.step === 'diagnosis') return go('upload')
+    if (route.step === 'diagnosis')    return go('upload')
+    if (route.step === 'manual-entry') return go('upload')
     if (idx > 0) go(STEPS[idx - 1])
   }
 
   const onReset = () => {
     setWizard({ evidence: {}, appealLang: 'en' })
     clearState()
-    navigate({ step: 'landing' })
+    navigate({ step: 'landing', caseId: null })
   }
 
-  const setEvidence = (evidence) => setWizard((w) => ({ ...w, evidence }))
+  // Create a new case (or reuse an existing caseId) then advance to upload.
+  const onStart = async () => {
+    if (!user) {
+      // Prompt login before creating a case — keeps data tied to a user.
+      go('login')
+      return
+    }
+    if (route.caseId) {
+      go('upload')
+      return
+    }
+    try {
+      const newCase = await createCase()
+      navigate({ step: 'upload', caseId: newCase.id })
+    } catch (e) {
+      console.error('[App] createCase failed', e)
+      // Fall through to upload anyway — caseId will be null; Upload handles it.
+      go('upload')
+    }
+  }
+
+  const setEvidence   = (evidence)   => setWizard((w) => ({ ...w, evidence }))
   const setAppealLang = (appealLang) => setWizard((w) => ({ ...w, appealLang }))
+
+  // ─── Processing callback (handle manual-entry route from OCR) ─────────────
+  const onProcessingDone = (result) => {
+    if (result === 'manual') {
+      go('manual-entry')
+    } else {
+      go('diagnosis')
+    }
+  }
+
+  // Don't flash screens while the session is resolving.
+  if (authLoading) return null
 
   return (
     <div className="hog-app hog-grain">
@@ -68,30 +111,97 @@ export default function App() {
 
       <ErrorBoundary labels={t.errorBoundary}>
         <main id="main-content" className="px-6 md:px-10 pb-24 max-w-[640px] mx-auto">
-          {route.step === 'landing' && <Landing t={t} onStart={() => go('upload')} />}
-          {route.step === 'upload' && <Upload t={t} onContinue={() => go('processing')} />}
-          {route.step === 'processing' && <Processing t={t} onDone={() => go('diagnosis')} />}
-          {route.step === 'diagnosis' && (
-            <Diagnosis t={t} lang={route.lang} onContinue={() => go('evidence')} />
+
+          {route.step === 'landing' && (
+            <Landing t={t} onStart={onStart} />
           )}
+
+          {route.step === 'login' && (
+            <Login
+              t={t}
+              onSent={() => {
+                // After sending the link, stay on login — user will return via
+                // email callback URL which carries the auth token.
+              }}
+            />
+          )}
+
+          {route.step === 'upload' && (
+            <Upload
+              t={t}
+              caseId={route.caseId}
+              onContinue={() => go('processing')}
+              onManual={() => go('manual-entry')}
+            />
+          )}
+
+          {route.step === 'manual-entry' && (
+            <ManualEntry
+              t={t}
+              caseId={route.caseId}
+              prefill={caseData ? {
+                denialCode:       caseData.denial_code,
+                denialLetterDate: caseData.denial_letter_date,
+                applicantName:    caseData.applicant_name,
+              } : {}}
+              onContinue={() => go('diagnosis')}
+            />
+          )}
+
+          {route.step === 'processing' && (
+            <Processing
+              t={t}
+              caseId={route.caseId}
+              onDone={onProcessingDone}
+            />
+          )}
+
+          {route.step === 'diagnosis' && (
+            <Diagnosis
+              t={t}
+              lang={route.lang}
+              caseData={caseData}
+              onContinue={() => go('evidence')}
+            />
+          )}
+
           {route.step === 'evidence' && (
             <Evidence
               t={t}
+              caseId={route.caseId}
               checked={wizard.evidence}
               setChecked={setEvidence}
               onContinue={() => go('draft')}
             />
           )}
+
           {route.step === 'draft' && (
             <Draft
               t={t}
+              caseData={caseData}
               appealLang={wizard.appealLang}
               setAppealLang={setAppealLang}
               onContinue={() => go('submit')}
             />
           )}
-          {route.step === 'submit' && <Submit t={t} onContinue={() => go('tracking')} />}
-          {route.step === 'tracking' && <Tracking t={t} lang={route.lang} onReset={onReset} />}
+
+          {route.step === 'submit' && (
+            <Submit
+              t={t}
+              caseId={route.caseId}
+              onContinue={() => go('tracking')}
+            />
+          )}
+
+          {route.step === 'tracking' && (
+            <Tracking
+              t={t}
+              lang={route.lang}
+              caseData={caseData}
+              onReset={onReset}
+            />
+          )}
+
         </main>
       </ErrorBoundary>
 

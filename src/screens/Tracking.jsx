@@ -1,9 +1,23 @@
 import { ArrowRight, Clock, MessageSquare } from 'lucide-react'
 import { Row, Rule } from '../components/Layout.jsx'
-import { demoCase } from '../content/case/demo.js'
+// demoCase intentionally removed — data comes via caseData prop.
 
-export function Tracking({ t, lang, onReset }) {
-  const expectedDate = lang === 'es' ? demoCase.expectedDateEs : demoCase.expectedDateEn
+export function Tracking({ t, lang, caseData, onReset }) {
+  const locale = lang === 'es' ? 'es-PR' : 'en-US'
+
+  const caseId = caseData?.id
+    ? caseData.id.slice(0, 8).toUpperCase()
+    : '—'
+
+  const submittedDate = caseData?.updated_at
+    ? new Intl.DateTimeFormat(locale, {
+        year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC',
+      }).format(new Date(caseData.updated_at))
+    : '—'
+
+  // Phone is not stored in cases — show placeholder until M6 wires profiles
+  const smsPartial = '—'
+
   return (
     <div className="hog-fade pt-6 md:pt-12">
       <div
@@ -33,12 +47,11 @@ export function Tracking({ t, lang, onReset }) {
       <Rule className="mb-8" />
 
       <dl className="space-y-6 mb-10">
-        <Row label={t.tracking.caseLabel} value={demoCase.caseId} mono />
-        <Row label={t.tracking.submittedLabel} value={demoCase.submittedDate} />
-        <Row label={t.tracking.expectedLabel} value={expectedDate} />
+        <Row label={t.tracking.caseLabel} value={caseId} mono />
+        <Row label={t.tracking.submittedLabel} value={submittedDate} />
         <Row
           label={t.tracking.smsLabel}
-          value={demoCase.smsPartial}
+          value={smsPartial}
           mono
           icon={<MessageSquare size={14} aria-hidden="true" />}
         />

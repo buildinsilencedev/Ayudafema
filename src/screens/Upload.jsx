@@ -1,16 +1,37 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Camera, Upload as UploadIcon, FileText, Shield } from 'lucide-react'
 import { Button, OutlineButton } from '../components/Button.jsx'
 import { StepLabel, Headline } from '../components/Layout.jsx'
+import { uploadFile, invokeParse } from '../lib/api.js'
 
-export function Upload({ t, onContinue }) {
-  const fileInputRef = useRef(null)
+export function Upload({ t, caseId, onContinue, onManual }) {
+  const fileInputRef   = useRef(null)
   const cameraInputRef = useRef(null)
+  const [uploading, setUploading] = useState(false)
+  const [error,     setError]     = useState(null)
 
-  // Real file inputs so keyboard users and screen readers can upload. We pass
-  // through to onContinue for now; real parsing plugs in here when the
-  // backend lands.
-  const onFilePick = () => onContinue()
+  const handleFile = async (file) => {
+    if (!file) return
+    // If there's no caseId the backend isn't set up yet — fall through to
+    // demo mode so the prototype still works without a Supabase project.
+    if (!caseId) {
+      onContinue()
+      return
+    }
+    setUploading(true)
+    setError(null)
+    try {
+      const doc = await uploadFile(caseId, 'denial_letter', file)
+      await invokeParse(caseId, doc.id)
+      onContinue()
+    } catch (err) {
+      console.error('[Upload] failed', err)
+      setError(err.message)
+      setUploading(false)
+    }
+  }
+
+  const onFilePick = (e) => handleFile(e.target.files?.[0])
 
   return (
     <div className="hog-fade pt-6 md:pt-12">
@@ -38,6 +59,7 @@ export function Upload({ t, onContinue }) {
             {t.upload.dropSub}
           </div>
 
+          {/* Hidden real inputs — triggered by buttons below */}
           <label htmlFor="upload-file" className="sr-only">
             {t.upload.fileInputLabel}
           </label>
@@ -48,7 +70,9 @@ export function Upload({ t, onContinue }) {
             accept="image/*"
             capture="environment"
             className="sr-only"
+            aria-label={t.upload.camera}
             onChange={onFilePick}
+            disabled={uploading}
           />
           <input
             ref={fileInputRef}
@@ -57,35 +81,48 @@ export function Upload({ t, onContinue }) {
             accept="image/*,application/pdf"
             className="sr-only"
             onChange={onFilePick}
+            disabled={uploading}
           />
 
           <div className="flex flex-col md:flex-row gap-3 mt-4 w-full md:w-auto">
             <Button
               onClick={() => cameraInputRef.current?.click()}
+              disabled={uploading}
               className="px-5 py-3 text-sm"
             >
-              <Camera size={14} aria-hidden="true" /> {t.upload.camera}
+              <Camera size={14} aria-hidden="true" />
+              {uploading ? '…' : t.upload.camera}
             </Button>
-            <OutlineButton onClick={() => fileInputRef.current?.click()}>
+            <OutlineButton
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+            >
               <UploadIcon size={14} aria-hidden="true" /> {t.upload.upload}
             </OutlineButton>
           </div>
+
+          {error && (
+            <p role="alert" className="mt-2 text-[13px]" style={{ color: 'var(--accent)' }}>
+              {error}
+            </p>
+          )}
         </div>
       </div>
 
       <div
-        className="flex items-center gap-2 text-[13px] mb-8"
+        className="flex items-center gap-2 text-[13px] mb-6"
         style={{ color: 'var(--ink-softer)' }}
       >
         <Shield size={13} aria-hidden="true" /> {t.upload.reassure}
       </div>
 
+      {/* Manual entry fallback — always visible */}
       <button
         type="button"
-        onClick={onContinue}
-        className="hog-btn-ghost text-sm underline underline-offset-4"
+        onClick={onManual ?? onContinue}
+        className="hog-btn-ghost text-sm underline underline-offset-4 block mb-2"
       >
-        {t.upload.demo} →
+        {t.upload.manualEntry ?? t.upload.demo} →
       </button>
     </div>
   )

@@ -2,15 +2,25 @@ import { ArrowRight } from 'lucide-react'
 import { Button } from '../components/Button.jsx'
 import { StepLabel, Headline, Row, Rule } from '../components/Layout.jsx'
 import { calcAppealDeadline, formatDeadline } from '../lib/deadline.js'
-import { demoCase } from '../content/case/demo.js'
 import { ownershipDenial } from '../content/denials/ownership.js'
+// demoCase is intentionally not imported here — data comes via caseData prop.
 
-export function Diagnosis({ t, lang, onContinue }) {
-  const { deadline, daysLeft, isOverdue } = calcAppealDeadline(demoCase.denialLetterDate, {
-    windowDays: ownershipDenial.windowDays,
-  })
-  const deadlineDate = formatDeadline(deadline, lang)
-  const shownDays = Math.max(0, daysLeft)
+export function Diagnosis({ t, lang, caseData, onContinue }) {
+  // Fall back gracefully while case data loads.
+  const letterDate   = caseData?.denial_letter_date ?? null
+  const caseId       = caseData?.id
+    ? caseData.id.slice(0, 8).toUpperCase()
+    : '—'
+  const disasterName = caseData?.disaster_name ?? '—'
+  const disasterCode = caseData?.disaster_code ?? '—'
+
+  const windowDays = ownershipDenial.windowDays
+  const { deadline, daysLeft, isOverdue } = letterDate
+    ? calcAppealDeadline(letterDate, { windowDays })
+    : { deadline: null, daysLeft: null, isOverdue: false }
+
+  const deadlineDate = deadline ? formatDeadline(deadline, lang) : '—'
+  const shownDays    = daysLeft != null ? Math.max(0, daysLeft) : null
 
   return (
     <div className="hog-fade pt-6 md:pt-12">
@@ -20,10 +30,10 @@ export function Diagnosis({ t, lang, onContinue }) {
       <Rule className="mb-8" />
 
       <dl className="space-y-6 mb-10">
-        <Row label={t.diagnosis.caseLabel} value={demoCase.caseId} mono />
+        <Row label={t.diagnosis.caseLabel} value={caseId} mono />
         <Row
           label={t.diagnosis.disasterLabel}
-          value={`${demoCase.disasterName} · ${demoCase.disasterCode}`}
+          value={`${disasterName} · ${disasterCode}`}
         />
         <div>
           <dt
@@ -53,11 +63,13 @@ export function Diagnosis({ t, lang, onContinue }) {
               className="hog-serif text-[48px] leading-none"
               style={{ color: isOverdue ? 'var(--accent)' : 'var(--ink)' }}
             >
-              {isOverdue ? '—' : shownDays}
+              {shownDays != null ? (isOverdue ? '0' : shownDays) : '—'}
             </span>
             <span className="text-[14px]" style={{ color: 'var(--ink-soft)' }}>
-              {isOverdue ? t.diagnosis.overdue : t.diagnosis.daysLeft} ·{' '}
-              {t.diagnosis.deadlineDate} {deadlineDate}
+              {shownDays != null
+                ? (isOverdue ? t.diagnosis.overdue : t.diagnosis.daysLeft)
+                : t.diagnosis.noDate}{' '}
+              {deadline ? `· ${t.diagnosis.deadlineDate} ${deadlineDate}` : ''}
             </span>
           </dd>
         </div>

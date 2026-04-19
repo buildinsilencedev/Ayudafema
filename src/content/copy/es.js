@@ -78,6 +78,7 @@ export const es = {
     upload: 'Subir archivo',
     reassure: 'Tus documentos son privados. Nadie más los ve.',
     demo: 'Usar carta de demostración',
+    manualEntry: 'Escribir los datos a mano',
     fileInputLabel: 'Seleccionar carta de negación',
   },
 
@@ -92,6 +93,39 @@ export const es = {
     ],
   },
 
+  login: {
+    step: 'Tu cuenta',
+    headline: 'Entra para\nguardar tu caso',
+    sub: 'Te mandamos un enlace por correo. No necesitas contraseña.',
+    emailLabel: 'Tu correo electrónico',
+    emailPlaceholder: 'tucorreo@ejemplo.com',
+    cta: 'Mandarme el enlace',
+    sending: 'Enviando…',
+    sentHeadline: 'Revisa tu correo',
+    sentSub: 'Mandamos un enlace a {email}. Tócalo para continuar.',
+    sentNote: 'Si no lo ves, revisa la carpeta de spam.',
+    privacy: 'Solo guardamos lo necesario para tu apelación. Puedes borrar todo en cualquier momento.',
+  },
+
+  manualEntry: {
+    step: 'Información de tu carta',
+    headline: 'Escribe los\ndatos a mano',
+    sub: 'No podemos leer la foto automáticamente. Escribe la fecha y el código de tu carta.',
+    dateLabel: 'Fecha de la carta de negación',
+    codeLabel: 'Código de negación',
+    code120: '120 — Titularidad no verificada',
+    code203: '203 — Ocupación no verificada',
+    code204: '204 — Duplicación de beneficios',
+    codeOther: 'Otro / No sé',
+    nameLabel: 'Tu nombre (opcional)',
+    namePlaceholder: 'Como aparece en la carta',
+    daysLeft: '{n} días para apelar',
+    overdue: 'El plazo venció',
+    unsupportedCode: 'Aún no podemos preparar esta apelación automáticamente. Llama a Ayuda Legal PR: 1-800-981-5342.',
+    cta: 'Continuar',
+    saving: 'Guardando…',
+  },
+
   diagnosis: {
     step: 'Paso 2 de 5',
     headline: 'Esto es lo\nque encontramos',
@@ -102,6 +136,7 @@ export const es = {
     daysLeft: 'días restantes',
     deadlineDate: 'vence el',
     overdue: 'Plazo vencido',
+    noDate: 'Fecha no disponible',
     reasonPlain: 'FEMA dice que no probaste ser dueño de la casa.',
     reasonContext:
       'Esta es la negación más común en Puerto Rico. El 35% de las casas no tienen título formal. Es apelable, y FEMA acepta otras formas de probar que la casa es tuya — no necesitas una escritura.',
@@ -133,6 +168,7 @@ export const es = {
     previewLabel: 'Vista previa de la carta',
     letterAriaLabel: 'Borrador de carta de apelación',
     switchTo: 'Ver en inglés',
+    generating: 'Preparando tu carta…',
     cta: 'Enviar a FEMA',
     disclaimer:
       'La apelación se envía en inglés porque FEMA procesa más rápido en inglés. Guardamos la versión en español para ti.',

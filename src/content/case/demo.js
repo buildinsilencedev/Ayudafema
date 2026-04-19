@@ -1,5 +1,8 @@
 // Demo case — realistic Hurricane Fiona ownership-denial scenario.
-// Used in the prototype flow; swap for real case data once the backend lands.
+//
+// @deprecated M2 — screens now receive real case data via `caseData` props
+// from `useCase(caseId)`. This file is kept for tests and Storybook only.
+// Do not import this into screens — use the prop instead.
 //
 // `denialLetterDate` is the canonical input; the 60-day appeal deadline is
 // computed from it via `lib/deadline.js` at render time, so the "days left"

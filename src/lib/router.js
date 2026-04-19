@@ -1,32 +1,41 @@
 import { useEffect, useState } from 'react'
 
-// Tiny hash-based router — no dependency. URL shape: `#/upload?lang=en`.
-// Unknown steps fall back to 'landing'; unknown langs fall back to 'es'.
+// Tiny hash-based router — no dependency.
+// URL shape: `#/upload?lang=en&case=abc123`
 //
-// We avoid a real router dep because this app has eight steps, one linear
-// flow, and should ship on the smallest possible runtime footprint for
+// We avoid a real router dep because this app has a short linear flow
+// and must ship on the smallest possible runtime footprint for
 // post-disaster Android devices on weak LTE.
 
-export const STEPS = ['landing', 'upload', 'processing', 'diagnosis', 'evidence', 'draft', 'submit', 'tracking']
+export const STEPS = [
+  'landing', 'login', 'upload', 'manual-entry', 'processing',
+  'diagnosis', 'evidence', 'draft', 'submit', 'tracking',
+  'admin-queue', 'admin-review',
+]
 export const LANGS = ['es', 'en']
 
-const DEFAULT_ROUTE = { step: 'landing', lang: 'es' }
+const DEFAULT_ROUTE = { step: 'landing', lang: 'es', caseId: null, draftId: null }
 
 function parseHash(hash) {
-  // `#/upload?lang=en` or `#/` or ``.
+  // `#/upload?lang=en&case=abc123` or `#/` or ``
   const raw = (hash || '').replace(/^#\/?/, '')
   if (!raw) return { ...DEFAULT_ROUTE }
   const [path, query = ''] = raw.split('?')
-  const step = STEPS.includes(path) ? path : 'landing'
-  const params = new URLSearchParams(query)
-  const lang = LANGS.includes(params.get('lang')) ? params.get('lang') : 'es'
-  return { step, lang }
+  const step    = STEPS.includes(path) ? path : 'landing'
+  const params  = new URLSearchParams(query)
+  const lang    = LANGS.includes(params.get('lang')) ? params.get('lang') : 'es'
+  const caseId  = params.get('case')  || null
+  const draftId = params.get('draft') || null
+  return { step, lang, caseId, draftId }
 }
 
-function buildHash({ step, lang }) {
+function buildHash({ step, lang, caseId, draftId }) {
   const safeStep = STEPS.includes(step) ? step : 'landing'
-  const safeLang = LANGS.includes(lang) ? lang : 'es'
-  return `#/${safeStep}?lang=${safeLang}`
+  const safeLang = LANGS.includes(lang)  ? lang  : 'es'
+  const params   = new URLSearchParams({ lang: safeLang })
+  if (caseId)  params.set('case',  caseId)
+  if (draftId) params.set('draft', draftId)
+  return `#/${safeStep}?${params.toString()}`
 }
 
 export function useRoute() {
