@@ -4,6 +4,7 @@ import { useRoute, STEPS } from './lib/router.js'
 import { loadState, saveState, clearState, getConsent, CONSENT_STATES } from './lib/persistence.js'
 import { useAuth } from './hooks/useAuth.js'
 import { useCase } from './hooks/useCase.js'
+import { isAttorney } from './lib/roles.js'
 import { createCase } from './lib/api.js'
 import { Header, Footer } from './components/Layout.jsx'
 import { ConsentBanner } from './components/ConsentBanner.jsx'
@@ -18,6 +19,8 @@ import { Evidence } from './screens/Evidence.jsx'
 import { Draft } from './screens/Draft.jsx'
 import { Submit } from './screens/Submit.jsx'
 import { Tracking } from './screens/Tracking.jsx'
+import { Queue } from './screens/admin/Queue.jsx'
+import { ReviewCase } from './screens/admin/ReviewCase.jsx'
 
 function initialWizardState(persisted) {
   return {
@@ -28,7 +31,7 @@ function initialWizardState(persisted) {
 
 export default function App() {
   const [route, navigate]   = useRoute()
-  const { user, loading: authLoading } = useAuth()
+  const { user, profile, loading: authLoading } = useAuth()
   const { caseData }        = useCase(route.caseId)
   const [wizard, setWizard] = useState(() => initialWizardState(loadState()))
   const [consentGen, setConsentGen] = useState(0)
@@ -47,6 +50,15 @@ export default function App() {
     }
   }, [wizard, consentGen])
 
+  // Redirect non-attorneys away from admin routes
+  useEffect(() => {
+    if (authLoading) return
+    const isAdminRoute = route.step === 'admin-queue' || route.step === 'admin-review'
+    if (isAdminRoute && !isAttorney(profile)) {
+      navigate({ step: 'landing' })
+    }
+  }, [route.step, profile, authLoading])
+
   // ─── Navigation helpers ────────────────────────────────────────────────────
 
   const go = (step, extras = {}) =>
@@ -56,6 +68,7 @@ export default function App() {
     const idx = STEPS.indexOf(route.step)
     if (route.step === 'diagnosis')    return go('upload')
     if (route.step === 'manual-entry') return go('upload')
+    if (route.step === 'admin-review') return navigate({ step: 'admin-queue' })
     if (idx > 0) go(STEPS[idx - 1])
   }
 
@@ -101,6 +114,41 @@ export default function App() {
   // Don't flash screens while the session is resolving.
   if (authLoading) return null
 
+  // ─── Admin layout (wider, no wizard chrome) ────────────────────────────────
+  const isAdminRoute = route.step === 'admin-queue' || route.step === 'admin-review'
+  if (isAdminRoute) {
+    return (
+      <div className="hog-app hog-grain">
+        <a href="#main-content" className="hog-skip-link">
+          {t.skipToContent}
+        </a>
+        <Header t={t} route={route} onBack={onBack} />
+        <ErrorBoundary labels={t.errorBoundary}>
+          <main
+            id="main-content"
+            className="px-6 md:px-10 pb-24 mx-auto"
+            style={{ maxWidth: 1080 }}
+          >
+            {route.step === 'admin-queue' && (
+              <Queue
+                onReview={(cid) => navigate({ step: 'admin-review', caseId: cid })}
+              />
+            )}
+            {route.step === 'admin-review' && (
+              <ReviewCase
+                caseId={route.caseId}
+                onBack={() => navigate({ step: 'admin-queue' })}
+                onApproved={() => navigate({ step: 'admin-queue' })}
+              />
+            )}
+          </main>
+        </ErrorBoundary>
+        <Footer t={t} />
+      </div>
+    )
+  }
+
+  // ─── Applicant wizard layout ───────────────────────────────────────────────
   return (
     <div className="hog-app hog-grain">
       <a href="#main-content" className="hog-skip-link">
