@@ -195,6 +195,46 @@ skips a tick, and webhook orchestration for heavier flows later. See
 
 ---
 
+## If Ayudafema itself is unreachable
+
+Hurricane-season reality: cell towers fall, power is intermittent, and
+the people who need this tool most are on prepaid phones at a shelter
+with one bar of signal. The app is built to degrade gracefully — but
+when the network is fully out, no software helps. Post this card
+somewhere in every AL-PR intake office and in the footer of any
+community outreach flyer.
+
+**If the app won't load, or you can't get past a blank screen:**
+
+1. **Call Ayuda Legal PR** at `1-800-981-5342`. Attorneys walk people
+   through FEMA appeals by phone — free.
+2. **Call 211** for shelter, food, and disaster-assistance referrals.
+3. **If you're in crisis or thinking about harming yourself**, call
+   `988` (Spanish available 24/7) or `911` for an emergency.
+
+**Bring this to any AL-PR office or FEMA Disaster Recovery Center:**
+
+- Copy of the FEMA denial letter (or just your FEMA case number)
+- A photo of your house — exterior, any damage
+- One bill with your name at your home address (electric, water,
+  internet, cable — any recent account works)
+- Your ID
+
+Four regulatory citations apply to almost every ownership-denial appeal
+in PR and AL-PR attorneys have them memorized — you do **not** need to
+know them:
+
+```
+44 CFR § 206.111          IAPPG v1.1
+DRRA § 1212               86 Fed. Reg. 31,553
+```
+
+A downloadable bilingual paper packet (evidence checklist + attorney-
+reviewed ownership template) is a planned improvement. Track it with
+the rest of the resilience work in the issue queue.
+
+---
+
 ## Run locally for development
 
 ```bash
