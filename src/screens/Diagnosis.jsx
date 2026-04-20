@@ -5,7 +5,7 @@ import { calcAppealDeadline, formatDeadline } from '../lib/deadline.js'
 import { ownershipDenial } from '../content/denials/ownership.js'
 // demoCase is intentionally not imported here — data comes via caseData prop.
 
-export function Diagnosis({ t, lang, caseData, onContinue }) {
+export function Diagnosis({ t, lang, caseData, onContinue, onResources }) {
   // Fall back gracefully while case data loads.
   const letterDate   = caseData?.denial_letter_date ?? null
   const caseId       = caseData?.id
@@ -75,27 +75,36 @@ export function Diagnosis({ t, lang, caseData, onContinue }) {
         </div>
       </dl>
 
-      <div
-        className="flex items-center gap-3 mb-10 px-4 py-3"
-        style={{ background: 'var(--accent-soft)' }}
-        role="status"
-      >
-        <span
-          aria-hidden="true"
-          style={{ width: 6, height: 6, background: 'var(--accent)', borderRadius: '50%' }}
-        />
-        <span
-          className="text-[13px] uppercase tracking-widest"
-          style={{ color: 'var(--accent)' }}
+      {!isOverdue && (
+        <div
+          className="flex items-center gap-3 mb-10 px-4 py-3"
+          style={{ background: 'var(--accent-soft)' }}
+          role="status"
         >
-          {t.diagnosis.appealableBadge}
-        </span>
-      </div>
+          <span
+            aria-hidden="true"
+            style={{ width: 6, height: 6, background: 'var(--accent)', borderRadius: '50%' }}
+          />
+          <span
+            className="text-[13px] uppercase tracking-widest"
+            style={{ color: 'var(--accent)' }}
+          >
+            {t.diagnosis.appealableBadge}
+          </span>
+        </div>
+      )}
 
-      <Button onClick={onContinue}>
-        {t.diagnosis.cta}
-        <ArrowRight size={16} aria-hidden="true" />
-      </Button>
+      {isOverdue ? (
+        <Button onClick={onResources}>
+          {t.diagnosis.overdueCta}
+          <ArrowRight size={16} aria-hidden="true" />
+        </Button>
+      ) : (
+        <Button onClick={onContinue}>
+          {t.diagnosis.cta}
+          <ArrowRight size={16} aria-hidden="true" />
+        </Button>
+      )}
     </div>
   )
 }

@@ -8,8 +8,11 @@ export const en = {
   demo: 'Prototype — demo data',
   back: 'Back',
   disclaimer: 'Independent tool. Not affiliated with FEMA or the federal government.',
+  crisisLine: 'Crisis or emergency: 911 \u00b7 Spanish crisis line 988',
   skipToContent: 'Skip to content',
   languageSwitch: 'Switch to Spanish',
+  needHelp: 'Need other help?',
+  needHelpSub: "Food, shelter, or you're in crisis — we can show you where to call.",
 
   consent: {
     title: 'Save your progress on this device',
@@ -115,6 +118,7 @@ export const en = {
     daysLeft: '{n} days to appeal',
     overdue: 'Appeal deadline has passed',
     unsupportedCode: "We can't prepare this appeal automatically yet. Call Ayuda Legal PR: 1-800-981-5342.",
+    otherResources: 'See other help resources',
     cta: 'Continue',
     saving: 'Saving\u2026',
   },
@@ -135,6 +139,7 @@ export const en = {
       "This is the most common denial in Puerto Rico. 35% of homes don't have formal title. It's appealable, and FEMA accepts other ways to prove ownership — you don't need a deed.",
     appealableBadge: 'Appealable',
     cta: 'Prepare my appeal',
+    overdueCta: 'See what else I can do',
   },
 
   evidenceScreen: {
@@ -257,6 +262,53 @@ export const en = {
       draftQualityCodeSpecific: 'Code-specific guidance',
       draftQualityGeneral: 'General framework \u2014 review with extra care',
     },
+  },
+
+  resources: {
+    step: 'Other resources',
+    headline: 'Other help\nthat exists today',
+    sub: "If what you need right now isn't an appeal — or your deadline has passed \u2014 these lines are free and answer in Spanish and English.",
+    disclaimer: 'We are not these organizations. We just point you to where they are.',
+    callLabel: 'Call',
+    visitLabel: 'Website',
+    back: 'Back to home',
+    sections: [
+      {
+        id: 'crisis',
+        title: 'Crisis right now',
+        body: "If you're in danger or thinking about harming yourself, call before anything else.",
+        items: [
+          { label: '911 \u2014 emergencies', phone: '911', note: 'Police, fire, ambulance' },
+          { label: '988 \u2014 crisis line', phone: '988', note: 'Spanish available 24/7' },
+          { label: 'SAMHSA \u2014 disaster distress', phone: '1-800-985-5990', note: 'Free, confidential, 24/7' },
+        ],
+      },
+      {
+        id: 'shelter',
+        title: 'Shelter and federal help',
+        body: 'Emergency shelters, your FEMA case status, disaster assistance questions.',
+        items: [
+          { label: 'Red Cross', phone: '1-800-733-2767', url: 'https://www.redcross.org/get-help/disaster-relief-and-recovery-services.html', note: 'Shelter and immediate needs' },
+          { label: 'FEMA main line', phone: '1-800-621-3362', url: 'https://www.disasterassistance.gov', note: 'Application status, letter questions' },
+        ],
+      },
+      {
+        id: 'food',
+        title: 'Food and basic services',
+        body: 'Food banks, D-SNAP, drinking water, local assistance.',
+        items: [
+          { label: '211 \u2014 services directory', phone: '211', url: 'https://www.211.org/', note: 'Available 24/7, Spanish available' },
+        ],
+      },
+      {
+        id: 'legal',
+        title: 'Other legal help',
+        body: "If your case isn't about FEMA, or you need an attorney.",
+        items: [
+          { label: 'Ayuda Legal Puerto Rico', phone: '1-800-981-5342', url: 'https://www.ayudalegalpr.org', note: 'Free for low-income families' },
+        ],
+      },
+    ],
   },
 
   tracking: {

@@ -38,6 +38,14 @@ Firma y fecha al final solo cuando todos estén marcados.
       *Cómo verificar:* provocar un error de prueba y confirmar que
       llega al panel de Sentry.
 
+- [ ] **Números de la pantalla de recursos verificados en vivo.** Cada
+      número y URL en `src/content/copy/{es,en}.js` bajo
+      `resources.sections[*].items` fue marcado o visitado, en español
+      e inglés cuando aplica, y cada entrada está firmada en
+      `docs/RESOURCES-VERIFICATION.md`.
+      *Cómo verificar:* el archivo de verificación está fechado,
+      firmado, y todas las filas están en verde.
+
 ---
 
 ## Pruebas legales

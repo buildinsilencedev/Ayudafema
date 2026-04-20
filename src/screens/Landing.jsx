@@ -2,7 +2,7 @@ import { ArrowRight, Phone } from 'lucide-react'
 import { Button } from '../components/Button.jsx'
 import { Headline, Rule } from '../components/Layout.jsx'
 
-export function Landing({ t, onStart }) {
+export function Landing({ t, onStart, onResources }) {
   return (
     <div className="hog-fade pt-12 md:pt-24">
       <div
@@ -25,6 +25,20 @@ export function Landing({ t, onStart }) {
         {t.landing.cta}
         <ArrowRight size={16} aria-hidden="true" />
       </Button>
+
+      <div className="mt-6 max-w-[520px]">
+        <button
+          type="button"
+          onClick={onResources}
+          className="hog-btn-ghost text-[14px] underline underline-offset-4"
+          style={{ color: 'var(--ink-soft)' }}
+        >
+          {t.needHelp}
+        </button>
+        <p className="text-[12px] mt-1" style={{ color: 'var(--ink-softer)' }}>
+          {t.needHelpSub}
+        </p>
+      </div>
 
       <Rule className="mt-16 mb-6" />
 

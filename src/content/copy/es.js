@@ -15,8 +15,11 @@ export const es = {
   demo: 'Prototipo — datos de demostración',
   back: 'Atrás',
   disclaimer: 'Herramienta independiente. No afiliada con FEMA ni con el gobierno federal.',
+  crisisLine: 'Crisis o emergencia: 911 · línea en español 988',
   skipToContent: 'Saltar al contenido',
   languageSwitch: 'Cambiar a inglés',
+  needHelp: '¿Necesitas otra ayuda?',
+  needHelpSub: 'Comida, refugio, o estás en crisis — te podemos mostrar dónde llamar.',
 
   consent: {
     title: 'Guardar tu progreso en este dispositivo',
@@ -122,6 +125,7 @@ export const es = {
     daysLeft: '{n} días para apelar',
     overdue: 'El plazo venció',
     unsupportedCode: 'Aún no podemos preparar esta apelación automáticamente. Llama a Ayuda Legal PR: 1-800-981-5342.',
+    otherResources: 'Ver otros recursos de ayuda',
     cta: 'Continuar',
     saving: 'Guardando…',
   },
@@ -142,6 +146,7 @@ export const es = {
       'Esta es la negación más común en Puerto Rico. El 35% de las casas no tienen título formal. Es apelable, y FEMA acepta otras formas de probar que la casa es tuya — no necesitas una escritura.',
     appealableBadge: 'Apelable',
     cta: 'Prepara mi apelación',
+    overdueCta: 'Ver qué más puedo hacer',
   },
 
   evidenceScreen: {
@@ -267,6 +272,53 @@ export const es = {
       draftQualityCodeSpecific: 'Guía específica del código',
       draftQualityGeneral: 'Marco general — revisar con más cuidado',
     },
+  },
+
+  resources: {
+    step: 'Otros recursos',
+    headline: 'Otra ayuda que\nexiste hoy',
+    sub: 'Si lo que necesitas ahora no es una apelación — o ya pasó tu plazo — estas líneas son gratis y atienden en español.',
+    disclaimer: 'No somos estas organizaciones. Solo te decimos dónde están.',
+    callLabel: 'Llamar',
+    visitLabel: 'Sitio web',
+    back: 'Volver al inicio',
+    sections: [
+      {
+        id: 'crisis',
+        title: 'Crisis ahora mismo',
+        body: 'Si estás en peligro o pensando en hacerte daño, llama antes que nada.',
+        items: [
+          { label: '911 — emergencias', phone: '911', note: 'Policía, bomberos, ambulancia' },
+          { label: '988 — línea de crisis', phone: '988', note: 'Español 24/7' },
+          { label: 'SAMHSA — estrés por desastre', phone: '1-800-985-5990', note: 'Marca "2" para español' },
+        ],
+      },
+      {
+        id: 'shelter',
+        title: 'Refugio y ayuda federal',
+        body: 'Refugios de emergencia, estatus de tu caso con FEMA, y preguntas sobre asistencia por desastre.',
+        items: [
+          { label: 'Cruz Roja', phone: '1-800-733-2767', url: 'https://www.redcross.org/get-help/disaster-relief-and-recovery-services.html', note: 'Refugio y necesidades inmediatas' },
+          { label: 'Línea general de FEMA', phone: '1-800-621-3362', url: 'https://www.disasterassistance.gov/es', note: 'Estatus de tu solicitud, preguntas sobre la carta' },
+        ],
+      },
+      {
+        id: 'food',
+        title: 'Comida y servicios básicos',
+        body: 'Bancos de comida, D-SNAP, agua potable, asistencia local.',
+        items: [
+          { label: '211 — directorio de servicios', phone: '211', url: 'https://www.211.org/', note: 'Disponible 24/7 en español' },
+        ],
+      },
+      {
+        id: 'legal',
+        title: 'Otra ayuda legal',
+        body: 'Si tu caso no es de FEMA, o si necesitas un abogado.',
+        items: [
+          { label: 'Ayuda Legal Puerto Rico', phone: '1-800-981-5342', url: 'https://www.ayudalegalpr.org', note: 'Gratis para familias de bajos ingresos' },
+        ],
+      },
+    ],
   },
 
   tracking: {

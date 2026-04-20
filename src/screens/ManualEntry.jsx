@@ -9,7 +9,7 @@ import { calcAppealDeadline } from '../lib/deadline.js'
 // Others show a "not yet supported" message.
 const SUPPORTED_CODES = ['120']
 
-export function ManualEntry({ t, caseId, prefill = {}, onContinue }) {
+export function ManualEntry({ t, caseId, prefill = {}, onContinue, onResources }) {
   const [date,    setDate]    = useState(prefill.denialLetterDate ?? '')
   const [code,    setCode]    = useState(prefill.denialCode       ?? '120')
   const [name,    setName]    = useState(prefill.applicantName    ?? '')
@@ -111,12 +111,22 @@ export function ManualEntry({ t, caseId, prefill = {}, onContinue }) {
             <option value="other">{t.manualEntry.codeOther}</option>
           </select>
           {unsupported && (
-            <p
-              className="mt-2 text-[13px] leading-relaxed"
-              style={{ color: 'var(--ink-softer)' }}
-            >
-              {t.manualEntry.unsupportedCode}
-            </p>
+            <div className="mt-2">
+              <p
+                className="text-[13px] leading-relaxed mb-3"
+                style={{ color: 'var(--ink-softer)' }}
+              >
+                {t.manualEntry.unsupportedCode}
+              </p>
+              <button
+                type="button"
+                onClick={onResources}
+                className="hog-btn-ghost text-[14px] underline underline-offset-4"
+                style={{ color: 'var(--ink)' }}
+              >
+                {t.manualEntry.otherResources}
+              </button>
+            </div>
           )}
         </div>
 

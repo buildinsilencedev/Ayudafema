@@ -19,6 +19,7 @@ import { Evidence } from './screens/Evidence.jsx'
 import { Draft } from './screens/Draft.jsx'
 import { Submit } from './screens/Submit.jsx'
 import { Tracking } from './screens/Tracking.jsx'
+import { Resources } from './screens/Resources.jsx'
 import { Queue } from './screens/admin/Queue.jsx'
 import { ReviewCase } from './screens/admin/ReviewCase.jsx'
 
@@ -69,8 +70,22 @@ export default function App() {
     if (route.step === 'diagnosis')    return go('upload')
     if (route.step === 'manual-entry') return go('upload')
     if (route.step === 'admin-review') return navigate({ step: 'admin-queue' })
+    if (route.step === 'resources')    return goBackFromResources()
     if (idx > 0) go(STEPS[idx - 1])
   }
+
+  // Resources can be reached from landing, manual-entry (unsupported code),
+  // diagnosis (overdue), or cold via a shared link. Prefer browser history
+  // so people return to exactly where they came from; fall back to landing.
+  const goBackFromResources = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back()
+    } else {
+      navigate({ step: 'landing' })
+    }
+  }
+
+  const onResources = () => navigate({ step: 'resources' })
 
   const onReset = () => {
     setWizard({ evidence: {}, appealLang: 'en' })
@@ -164,7 +179,7 @@ export default function App() {
         <main id="main-content" className="px-6 md:px-10 pb-24 max-w-[640px] mx-auto">
 
           {route.step === 'landing' && (
-            <Landing t={t} onStart={onStart} />
+            <Landing t={t} onStart={onStart} onResources={onResources} />
           )}
 
           {route.step === 'login' && (
@@ -196,6 +211,7 @@ export default function App() {
                 applicantName:    caseData.applicant_name,
               } : {}}
               onContinue={() => go('diagnosis')}
+              onResources={onResources}
             />
           )}
 
@@ -213,6 +229,7 @@ export default function App() {
               lang={route.lang}
               caseData={caseData}
               onContinue={() => go('evidence')}
+              onResources={onResources}
             />
           )}
 
@@ -251,6 +268,10 @@ export default function App() {
               caseData={caseData}
               onReset={onReset}
             />
+          )}
+
+          {route.step === 'resources' && (
+            <Resources t={t} onBack={goBackFromResources} />
           )}
 
         </main>

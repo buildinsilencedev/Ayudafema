@@ -66,6 +66,9 @@ export function Footer({ t }) {
         <span>{t.free}</span>
         <span className="uppercase tracking-widest">{t.builtBy}</span>
       </div>
+      <p className="text-[11px] mb-1" style={{ color: 'var(--ink-soft)' }}>
+        {t.crisisLine}
+      </p>
       <p className="text-[10px]" style={{ color: 'var(--ink-softer)' }}>
         {t.disclaimer}
       </p>

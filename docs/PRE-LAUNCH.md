@@ -37,6 +37,14 @@ Sign and date at the bottom only when all items are checked.
       *How to verify:* trigger a test error and confirm it reaches
       the Sentry dashboard.
 
+- [ ] **Resources phone numbers verified live.** Every number and URL
+      in `src/content/copy/{es,en}.js` under `resources.sections[*].items`
+      was dialed or visited, in Spanish and English where applicable,
+      and each entry is signed off in
+      `docs/RESOURCES-VERIFICATION.md`.
+      *How to verify:* the verification log is dated, signed, and
+      every row is green.
+
 ---
 
 ## Legal tests

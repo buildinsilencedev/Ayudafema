@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 export const STEPS = [
   'landing', 'login', 'upload', 'manual-entry', 'processing',
   'diagnosis', 'evidence', 'draft', 'submit', 'tracking',
+  'resources',
   'admin-queue', 'admin-review',
 ]
 export const LANGS = ['es', 'en']
