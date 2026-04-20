@@ -206,6 +206,49 @@ webhooks para flujos más pesados más adelante. Ver
 
 ---
 
+## Si Ayudafema no carga
+
+La realidad de la temporada de huracanes: las torres de celular se
+caen, la luz va y viene, y la gente que más necesita esta herramienta
+está en un refugio con un celular prepagado y una sola barra de señal.
+La app está hecha para degradarse con gracia — pero si no hay red, no
+hay software que ayude. Cuelga esta tarjeta en cada oficina de
+admisión de AL-PR y ponla al final de los volantes de comunidad.
+
+**Si la app no carga, o si la pantalla se queda en blanco:**
+
+1. **Llama a Ayuda Legal PR** al `1-800-981-5342`. Los abogados te
+   llevan por el proceso de apelación por teléfono — gratis.
+2. **Llama al 211** para refugio, comida, y recursos de asistencia por
+   desastre.
+3. **Si estás en crisis o pensando en hacerte daño**, llama al `988`
+   (español 24/7) o al `911` si es una emergencia.
+
+**Lleva esto a cualquier oficina de AL-PR o Centro de Recuperación por
+Desastre de FEMA:**
+
+- Copia de la carta de negación de FEMA (o tu número de caso de FEMA)
+- Una foto de tu casa — exterior y cualquier daño
+- Un recibo con tu nombre y la dirección de la casa (luz, agua,
+  internet, cable — cualquier cuenta reciente sirve)
+- Tu identificación
+
+Casi toda apelación de titularidad en PR se apoya en cuatro citas
+regulatorias, y los abogados de AL-PR las tienen memorizadas — tú
+**no** necesitas conocerlas:
+
+```
+44 CFR § 206.111          IAPPG v1.1
+DRRA § 1212               86 Fed. Reg. 31,553
+```
+
+Un paquete bilingüe descargable en papel (lista de evidencia + carta
+de apelación por titularidad revisada por abogado) es una mejora
+planificada. Se rastrea junto al resto del trabajo de resiliencia en
+la cola de issues.
+
+---
+
 ## Correr localmente para desarrollo
 
 ```bash
