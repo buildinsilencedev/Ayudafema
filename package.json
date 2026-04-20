@@ -8,7 +8,14 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "db:push": "supabase db push",
+    "db:reset": "supabase db reset",
+    "functions:deploy": "supabase functions deploy --no-verify-jwt",
+    "functions:secrets": "bash scripts/set-secrets.sh",
+    "corpus:ingest": "deno run --allow-read --allow-net --allow-env scripts/ingest-corpus.ts",
+    "n8n:import": "bash scripts/n8n-import.sh",
+    "verify": "node scripts/verify-deployment.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.103.3",

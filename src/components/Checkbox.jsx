@@ -1,8 +1,8 @@
 import { Check } from 'lucide-react'
 
 // Custom-styled checkbox backed by a real <input type="checkbox"> so screen
-// readers and keyboard users get proper semantics. The visible circle tracks
-// the input's checked state.
+// readers and keyboard users get proper semantics. Square corners to match
+// the ink-on-paper aesthetic rule in CLAUDE.md.
 
 export function Checkbox({ id, checked, onChange, label, className = '' }) {
   return (
@@ -16,7 +16,7 @@ export function Checkbox({ id, checked, onChange, label, className = '' }) {
       />
       <span
         aria-hidden="true"
-        className="w-5 h-5 rounded-full flex items-center justify-center border peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2"
+        className="w-5 h-5 rounded-none flex items-center justify-center border peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2"
         style={{
           borderColor: checked ? 'var(--ok)' : 'var(--ink-softer)',
           background: checked ? 'var(--ok)' : 'transparent',
