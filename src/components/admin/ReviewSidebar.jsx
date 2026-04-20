@@ -7,9 +7,10 @@
 
 import { AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react'
 
-export function ReviewSidebar({ caseData, draft }) {
+export function ReviewSidebar({ caseData, draft, t }) {
   if (!caseData) return null
 
+  const copy = t.admin.sidebar
   const daysLeft = getDaysLeft(caseData.denial_letter_date)
   const urgent   = daysLeft !== null && daysLeft <= 7
   const overdue  = daysLeft !== null && daysLeft < 0
@@ -20,7 +21,7 @@ export function ReviewSidebar({ caseData, draft }) {
       style={{ color: 'var(--ink-soft)' }}
     >
       {/* Deadline */}
-      <Section label="Deadline">
+      <Section label={copy.deadline}>
         <div
           className="flex items-center gap-2 text-[15px]"
           style={{ color: overdue || urgent ? 'var(--accent)' : 'var(--ink)' }}
@@ -30,34 +31,34 @@ export function ReviewSidebar({ caseData, draft }) {
             : <Clock size={14} aria-hidden="true" />
           }
           {overdue
-            ? 'Appeal deadline has passed'
+            ? copy.deadlinePassed
             : daysLeft !== null
-              ? `${daysLeft} days remaining`
-              : 'Date not available'
+              ? copy.daysRemaining.replace('{n}', daysLeft)
+              : copy.dateUnavailable
           }
         </div>
         {caseData.denial_letter_date && (
           <p className="mt-1 text-[12px]" style={{ color: 'var(--ink-softer)' }}>
-            Letter date: {caseData.denial_letter_date}
+            {copy.letterDate.replace('{date}', caseData.denial_letter_date)}
           </p>
         )}
       </Section>
 
       {/* Denial info */}
-      <Section label="Denial">
+      <Section label={copy.denial}>
         <p>
-          <span className="font-medium">Code:</span>{' '}
+          <span className="font-medium">{copy.denialCode}</span>{' '}
           {caseData.denial_code ?? '—'}
         </p>
         <p className="mt-1">
-          <span className="font-medium">Disaster:</span>{' '}
+          <span className="font-medium">{copy.disaster}</span>{' '}
           {caseData.disaster_code ?? '—'} {caseData.disaster_name ? `— ${caseData.disaster_name}` : ''}
         </p>
       </Section>
 
       {/* Applicant */}
-      <Section label="Applicant">
-        <p>{caseData.applicant_name ?? 'Name not recorded'}</p>
+      <Section label={copy.applicant}>
+        <p>{caseData.applicant_name ?? copy.applicantMissing}</p>
         {caseData.applicant_address && (
           <p className="mt-1 text-[12px]" style={{ color: 'var(--ink-softer)' }}>
             {caseData.applicant_address}
@@ -67,7 +68,7 @@ export function ReviewSidebar({ caseData, draft }) {
 
       {/* Citation check */}
       {draft && (
-        <Section label="Required citations">
+        <Section label={copy.citations}>
           {REQUIRED_CITATIONS.map((cite) => {
             const present = draft.body_en?.includes(cite) || draft.body_es?.includes(cite)
             return (
@@ -85,11 +86,26 @@ export function ReviewSidebar({ caseData, draft }) {
         </Section>
       )}
 
+      {/* Draft quality */}
+      {draft?.draft_quality && (
+        <Section label={copy.draftQuality}>
+          <p
+            style={{
+              color: draft.draft_quality === 'code_specific' ? 'var(--ok)' : 'var(--accent)',
+            }}
+          >
+            {draft.draft_quality === 'code_specific'
+              ? copy.draftQualityCodeSpecific
+              : copy.draftQualityGeneral}
+          </p>
+        </Section>
+      )}
+
       {/* Model */}
       {draft?.model && (
-        <Section label="Model">
+        <Section label={copy.model}>
           <p className="font-mono text-[11px]">{draft.model}</p>
-          <p className="mt-0.5">v{draft.version}</p>
+          <p className="mt-0.5">{copy.versionPrefix}{draft.version}</p>
         </Section>
       )}
     </div>

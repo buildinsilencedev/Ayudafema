@@ -131,11 +131,14 @@ export default function App() {
           >
             {route.step === 'admin-queue' && (
               <Queue
+                t={t}
+                lang={route.lang}
                 onReview={(cid) => navigate({ step: 'admin-review', caseId: cid })}
               />
             )}
             {route.step === 'admin-review' && (
               <ReviewCase
+                t={t}
                 caseId={route.caseId}
                 onBack={() => navigate({ step: 'admin-queue' })}
                 onApproved={() => navigate({ step: 'admin-queue' })}

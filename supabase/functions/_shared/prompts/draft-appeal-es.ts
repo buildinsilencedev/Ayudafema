@@ -1,5 +1,11 @@
 /**
- * PR-Spanish appeal drafting prompt — Code 120 (Ownership Not Verified).
+ * PR-Spanish appeal drafting prompt — code-agnostic.
+ *
+ * The prompt takes the denial code and reason text from the parsed letter,
+ * plus retrieved regulatory context, and drafts an appeal addressing that
+ * specific denial. No hardcoded denial-type framing — RAG + the IAPPG
+ * fallback context supply the code-specific guidance, and attorney review
+ * catches anything outside scope.
  *
  * Register rules (from CLAUDE.md + pr-plain-spanish-guide.txt):
  * - tú form, not usted
@@ -7,7 +13,6 @@
  * - "celular" not "móvil"; "recibo de luz" not "factura eléctrica"
  * - Ban list enforced in system prompt
  * - Required citations embedded verbatim
- * - 6-paragraph structure for code 120
  */
 
 export interface DraftVarsEs {
@@ -15,6 +20,8 @@ export interface DraftVarsEs {
   disasterCode:     string
   disasterName:     string
   denialLetterDate: string   // e.g. "5 de abril de 2026"
+  denialCode:       string   // e.g. "120", "203", "605"
+  denialReasonText: string   // parsed reason paragraph from the denial letter
   evidenceSummary:  string   // comma-separated list of attached evidence
   ragContext:       string   // retrieved regulatory chunks
 }
@@ -32,15 +39,17 @@ REGISTRO OBLIGATORIO — sigue estas reglas sin excepción:
 
 CITAS REQUERIDAS — las tres deben aparecer en la carta exactamente así:
 1. 44 CFR § 206.111
-2. IAPPG v1.1 § V.D.1
+2. IAPPG v1.1
 3. DRRA § 1212 y 86 Fed. Reg. 31,553
+
+Estas tres citas son el marco base para toda apelación de FEMA IA. Si el CONTEXTO REGULATORIO RELEVANTE incluye secciones específicas del código de negación, úsalas también. Si no hay guía específica en el contexto, limítate al marco base y al argumento procesal — no inventes citas.
 
 ESTRUCTURA DE LA CARTA (6 párrafos):
 1. Identificación y propósito: quién apela, número de caso, desastre
-2. Resumen de la negación: qué negó FEMA y por qué es incorrecto
-3. Base legal: citar los reglamentos que permiten documentación alternativa
+2. Resumen de la negación: qué negó FEMA según la carta, citando el código de negación exacto, y por qué la determinación amerita reconsideración
+3. Base legal: citar los reglamentos aplicables del contexto
 4. Evidencia presentada: listar los documentos que se adjuntan
-5. Argumento sustantivo: por qué la evidencia adjunta satisface los requisitos
+5. Argumento sustantivo: por qué la evidencia adjunta responde a la razón específica de la negación
 6. Solicitud y cierre: pedir la reconsideración y proporcionar datos de contacto
 
 FORMATO:
@@ -58,8 +67,9 @@ DATOS DEL CASO:
 - Solicitante: ${vars.applicantName}
 - Desastre: ${vars.disasterName} (${vars.disasterCode})
 - Fecha de la carta de negación: ${vars.denialLetterDate}
-- Motivo de negación: Código 120 — Titularidad no verificada
+- Código de negación de FEMA: ${vars.denialCode}
+- Razón indicada por FEMA: ${vars.denialReasonText}
 - Evidencia adjunta a esta apelación: ${vars.evidenceSummary}
 
-Redacta la carta de apelación completa en español puertorriqueño. La carta debe incluir las tres citas reglamentarias requeridas (44 CFR § 206.111, IAPPG v1.1 § V.D.1, DRRA § 1212 y 86 Fed. Reg. 31,553) y explicar por qué la evidencia adjunta demuestra que ${vars.applicantName} es dueño de su casa.`
+Redacta la carta de apelación completa en español puertorriqueño. Dirige el argumento a la razón específica de la negación (${vars.denialCode}) tal como FEMA la describió, apoyándote en el contexto regulatorio entregado y en las tres citas base (44 CFR § 206.111, IAPPG v1.1, DRRA § 1212 y 86 Fed. Reg. 31,553). Explica por qué la evidencia adjunta responde directamente a lo que FEMA señaló como faltante.`
 }

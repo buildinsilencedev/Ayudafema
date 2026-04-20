@@ -9,6 +9,11 @@ claro, y generas una apelación revisada por abogado.
 
 Construida por La Mano. Donada a **Ayuda Legal Puerto Rico** para operarla.
 
+> **¿No tienes experiencia técnica?** Lee primero
+> [`docs/DESPLIEGUE.md`](./docs/DESPLIEGUE.md). Es la versión sin
+> línea de comando, hecha para quien opera una organización sin fines
+> de lucro.
+
 El contexto completo del proyecto está en [`CLAUDE.md`](./CLAUDE.md).
 
 ---
@@ -61,21 +66,19 @@ de operaciones.
 ### Herramientas en tu computadora
 
 - **Node 20+** — https://nodejs.org
-- **Deno 1.40+** — https://deno.com (solo se necesita para el ingest del corpus)
 - **Supabase CLI** — `brew install supabase/tap/supabase` o ver
   https://supabase.com/docs/guides/cli
 - **Git** — para clonar y empujar
 
-No necesitas Docker, Railway, ni n8n para la Fase 1.
+No necesitas Deno, Docker, Railway, ni n8n para la Fase 1.
 
 ---
 
-## Despliegue de Fase 1 (~1 hora)
+## Despliegue de Fase 1 (~30 minutos)
 
-Cada paso es un solo comando o una acción documentada en un dashboard. Si
-te topas con algo que requiere criterio que los docs no cubren, detente y
-escribe al contacto de garantía de La Mano en
-[`docs/RUNBOOK.md`](./docs/RUNBOOK.md).
+Para la guía paso a paso en español, orientada a quien no programa,
+usa [`docs/DESPLIEGUE.md`](./docs/DESPLIEGUE.md). Los mismos pasos
+condensados en tres comandos:
 
 ### 1. Clona e instala
 
@@ -86,110 +89,58 @@ npm ci
 cp .env.example .env.local
 ```
 
-### 2. Crea el proyecto en Supabase
+### 2. Llena `.env.local`
 
-1. En el dashboard de Supabase, crea un proyecto nuevo. Escoge la región
-   más cercana a Puerto Rico (US East sirve).
-2. Abre *Project Settings → API* y copia estos tres valores a
-   `.env.local`:
-   - `VITE_SUPABASE_URL` ← Project URL
-   - `VITE_SUPABASE_ANON_KEY` ← anon / public key
-   - `SUPABASE_SERVICE_ROLE_KEY` ← service_role key (guárdala como un secreto)
-3. Conecta la CLI al proyecto:
-   ```bash
-   supabase login
-   supabase link --project-ref <tu-project-ref>
-   ```
+Cada variable trae al lado la ruta exacta en el dashboard correspondiente.
+Necesarias: URL y llaves de Supabase, OpenRouter, OpenAI, y Twilio.
 
-### 3. Empuja el esquema de la base de datos
+### 3. Un solo comando despliega el backend
 
 ```bash
-npm run db:push
+supabase login    # solo la primera vez
+npm run bootstrap
 ```
 
-Esto aplica las cuatro migraciones en `supabase/migrations/`: tablas,
-políticas RLS, pgvector para RAG, y trabajos de `pg_cron` para los
-recordatorios por SMS y la purga a los 90 días.
+`bootstrap` te pide el *project-ref* de Supabase una vez, y corre:
+migraciones, push de secretos, despliegue de las seis edge functions
+(`parseDenialLetter`, `draftAppeal`, `sendSMS`, `scheduleReminders`,
+`smsWebhook`, `purgeOldCases`), siembra RAG y verificación. Puedes
+correrlo de nuevo si algo falla.
 
-### 4. Configura las llaves de LLM y SMS
+### 4. Apunta el webhook de entrada de Twilio
 
-Llena estos valores en `.env.local` — el archivo mismo te dice exactamente
-dónde vive cada valor en cada dashboard:
-
-- `OPENROUTER_API_KEY`
-- `OPENAI_API_KEY`
-- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`, `TWILIO_MESSAGING_SERVICE_SID`
-
-Configuración de Twilio: compra un número con código de área de PR, crea un
-Messaging Service, y añade el número como remitente. El webhook de entrada
-lo conectas en el paso 7.
-
-Después, empuja los secretos del backend a Supabase:
-
-```bash
-npm run functions:secrets
-```
-
-### 5. Despliega las edge functions
-
-```bash
-npm run functions:deploy
-```
-
-Esto despliega las seis funciones:
-`parseDenialLetter`, `draftAppeal`, `sendSMS`, `scheduleReminders`,
-`smsWebhook`, `purgeOldCases`.
-
-### 6. Siembra la base de conocimiento RAG
-
-```bash
-npm run corpus:ingest
-```
-
-Convierte en embeddings los reglamentos de FEMA, los playbooks de códigos
-de negación, y las apelaciones de ejemplo en `content/corpus/`, y los
-guarda en `knowledge_base`. Costo único con OpenAI de ~$0.01. Corre de
-nuevo con `-- --clear` para limpiar y re-sembrar después de actualizar el
-corpus.
-
-### 7. Apunta el webhook de entrada de Twilio
-
-En la consola de Twilio, abre *Messaging → Services → tu servicio →
-Integration* y apunta el webhook de entrada a:
+Twilio → *Messaging → Services → tu servicio → Integration* → webhook
+de entrada:
 
 ```
 https://<tu-project-ref>.functions.supabase.co/smsWebhook
 ```
 
-Método: `HTTP POST`. Esto enruta las respuestas STOP / HELP / CASE al
-manejador bilingüe.
+Método `HTTP POST`. Enruta STOP / HELP / CASE al manejador bilingüe.
 
-### 8. Despliega el frontend en Cloudflare Pages
+### 5. Despliega el frontend en Cloudflare Pages
 
-1. Dashboard de Cloudflare → Pages → Create → Connect to Git → escoge este repo.
-2. Configuración del build:
-   - Framework preset: **Vite**
-   - Build command: `npm run build`
-   - Build output: `dist`
-3. Variables de entorno: añade `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`,
-   `VITE_SITE_URL` (el URL de Pages), y `VITE_SENTRY_DSN` si configuraste
-   Sentry.
-4. Despliega. Añade el dominio de producción bajo *Custom domains* cuando
-   el DNS esté listo.
-5. Regresa a Supabase → *Authentication → URL Configuration* y añade tu URL
-   de Pages a la lista permitida, para que el redirect del magic-link
-   funcione.
+1. Cloudflare → Pages → Create → Connect to Git → escoge este repo.
+2. Preset Vite, build `npm run build`, salida `dist`.
+3. Variables de entorno: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`,
+   `VITE_SITE_URL` (el URL que te dé Pages), `VITE_SENTRY_DSN`
+   (opcional).
+4. En Supabase → *Authentication → URL Configuration*, añade el URL de
+   Pages para que los magic-links funcionen.
 
-### 9. Verifica
+### 6. Activa el keepalive de Supabase
 
-```bash
-npm run verify
-```
+En tu fork de GitHub: *Settings → Secrets and variables → Actions* →
+añade `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` con los mismos
+valores de `.env.local`. Abre la pestaña *Actions*, selecciona
+*Supabase keepalive* y córrelo manualmente una vez. A partir de ahí
+corre los lunes y jueves a las 13:00 UTC y evita que el proyecto del
+plan gratis se pause.
 
-Espera que todo salga en verde. El script confirma: Supabase alcanzable,
-RLS activado, corpus sembrado, edge functions responden, número de Twilio
-registrado. Cualquier bandera roja te apunta a la sección correspondiente
-de `docs/RUNBOOK.md`.
+### 7. Revisa la lista antes de lanzar
+
+No abras la herramienta al público hasta que todo en
+[`docs/ANTES-DE-LANZAR.md`](./docs/ANTES-DE-LANZAR.md) esté firmado.
 
 ---
 
@@ -228,8 +179,8 @@ webhooks para flujos más pesados más adelante. Ver
    ```
    El walkthrough completo y las expectativas de SLA están en
    [`docs/ATTORNEY-ONBOARDING.md`](./docs/ATTORNEY-ONBOARDING.md).
-2. **Corre un caso de prueba de principio a fin** — usa la negación de
-   ejemplo de Fiona en `content/samples/` para pasar por subida →
+2. **Corre un caso de prueba de principio a fin** — usa
+   `content/samples/fiona-ownership-denial.txt` para pasar por subida →
    diagnóstico → borrador → revisión de abogado → envío. Confirma que el
    sello "revisado por abogado" solo aparece después de la firma.
 3. **Conecta las alertas de Sentry** si lo habilitaste, y suscribe el
@@ -285,15 +236,16 @@ ayudafema/
 │   ├── content/copy/       # Copy en ES + EN, con test de paridad
 │   └── content/templates/  # Plantillas de cartas de apelación
 ├── supabase/
-│   ├── migrations/         # 0001_init → 0004_cron
+│   ├── migrations/         # 0001_init → 0005_draft_quality
 │   └── functions/          # 6 edge functions + utilidades _shared
 ├── n8n/
 │   ├── docker-compose.yml  # Solo Fase 2
 │   └── workflows/          # 5 workflows en JSON
 ├── content/corpus/         # Reglas de FEMA, playbooks, apelaciones de ejemplo
-├── scripts/                # set-secrets.sh, n8n-import.sh,
-│                           #   verify-deployment.mjs, ingest-corpus.ts
-├── docs/                   # HANDOFF, RUNBOOK, ARCHITECTURE,
+├── scripts/                # bootstrap.sh, set-secrets.sh, n8n-import.sh,
+│                           #   verify-deployment.mjs, ingest-corpus.mjs
+├── docs/                   # DESPLIEGUE (ES), ANTES-DE-LANZAR / PRE-LAUNCH,
+│                           #   HANDOFF, RUNBOOK, ARCHITECTURE,
 │                           #   ATTORNEY-ONBOARDING, COST-MODEL
 ├── .env.example            # Anotado: cada variable te dice dónde encontrarla
 ├── railway.json            # Solo Fase 2

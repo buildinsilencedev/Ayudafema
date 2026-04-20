@@ -1,0 +1,52 @@
+name: Supabase keepalive
+
+# Supabase free-tier projects pause after 7 days of zero inbound traffic.
+# A paused project means pg_cron stops running — SMS reminders and the
+# 90-day purge silently fail. This workflow pings the project twice a
+# week so it stays awake at zero cost.
+#
+# It also exercises the anon key, so if the key is rotated or the project
+# URL changes and somebody forgets to update the repo secrets, the
+# workflow fails and sends the default GitHub Actions email alert.
+
+on:
+  schedule:
+    # 13:00 UTC Mondays and Thursdays — well inside the 7-day window.
+    - cron: '0 13 * * 1,4'
+  workflow_dispatch:
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    name: Ping Supabase REST
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /rest/v1/
+        env:
+          SUPABASE_URL:      ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "ERROR: VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY not set in repo secrets."
+            echo "See docs/DESPLIEGUE.md — required for CI and for keeping the project warm."
+            exit 1
+          fi
+
+          status=$(curl -s -o /tmp/body -w '%{http_code}' \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            "$SUPABASE_URL/rest/v1/")
+
+          echo "HTTP $status"
+          head -c 400 /tmp/body || true
+          echo
+
+          # PostgREST returns 200 on /rest/v1/. Anything else is a real problem.
+          if [ "$status" != "200" ]; then
+            echo "Keepalive failed — Supabase project may be paused or misconfigured."
+            exit 1
+          fi
+          echo "ok — project is awake."

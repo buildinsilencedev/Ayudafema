@@ -1,0 +1,74 @@
+U.S. Department of Homeland Security
+Federal Emergency Management Agency
+P.O. Box 10055
+Hyattsville, MD 20782-8055
+
+April 5, 2026
+
+MARÍA J. RIVERA SANTIAGO
+[REDACTED STREET]
+YABUCOA, PR 00767
+
+Registration Number:         4671-000-0000-DR
+Disaster Declaration Number: DR-4671-PR
+Disaster:                    HURRICANE FIONA
+
+Dear Applicant:
+
+We have reviewed your application for Federal Assistance under the
+Individuals and Households Program (IHP) and your request for Housing
+Assistance related to the disaster referenced above.
+
+We have determined that you are not eligible for Federal Assistance at
+this time because of the following reason(s):
+
+   Ineligible — Ownership Not Verified (Code 120)
+
+   Ownership of the damaged dwelling could not be verified from the
+   documentation on file. You did not provide documents acceptable to
+   FEMA to establish ownership of the pre-disaster primary residence.
+
+You have the right to appeal this decision within 60 days of the date
+of this letter. Your appeal must be in writing and signed by you or a
+person you have authorized in writing to act on your behalf. You may
+submit supporting documentation, including but not limited to: deed,
+title, mortgage, property tax receipts, a structural insurance policy
+showing the applicant as an insured party, a court document, a public
+record, or a letter or affidavit that meets FEMA requirements for
+self-certification of occupancy and ownership.
+
+How to submit your appeal:
+
+  Online: Log in to your DisasterAssistance.gov account, open the
+          Correspondence tab, and upload your appeal letter and
+          supporting documents.
+
+  Mail:   FEMA — Individuals & Households Program
+          National Processing Service Center
+          P.O. Box 10055
+          Hyattsville, MD 20782-8055
+
+  Fax:    1-800-827-8112 (Attn: FEMA — Individuals & Households
+          Program)
+
+If you have any questions about this decision or your appeal rights,
+please call the FEMA Helpline at 1-800-621-3362 (TTY 1-800-462-7585),
+7:00 a.m. to 11:00 p.m. Eastern Time, seven days a week. Multilingual
+operators are available.
+
+Please retain a copy of this letter for your records.
+
+Sincerely,
+
+Recovery Directorate
+Individual Assistance Division
+Federal Emergency Management Agency
+
+---------------------------------------------------------------------
+NOTE (not part of the FEMA letter):
+
+This is a SYNTHETIC sample for testing Ayudafema end-to-end. The
+applicant name, street, and registration number are fabricated; do
+not use them as if they were a real case. Disaster declaration
+DR-4671-PR is a real FEMA declaration (Hurricane Fiona, September
+2022).

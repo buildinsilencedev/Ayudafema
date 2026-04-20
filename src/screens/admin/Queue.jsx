@@ -10,12 +10,14 @@
 import { Clock, AlertTriangle } from 'lucide-react'
 import { useReviewQueue } from '../../hooks/useReviewQueue.js'
 
-export function Queue({ onReview }) {
+export function Queue({ onReview, t, lang }) {
   const { items, loading, error } = useReviewQueue()
+  const copy = t.admin
+  const dateLocale = lang === 'es' ? 'es-PR' : 'en-US'
 
   if (loading) {
     return (
-      <div className="hog-fade pt-12">
+      <div className="hog-fade pt-12" aria-label={copy.queueLoadingLabel}>
         <div className="hog-pulse h-6 w-48 mb-8" style={{ background: 'var(--rule)' }} />
         {[0, 1, 2].map((i) => (
           <div
@@ -31,7 +33,7 @@ export function Queue({ onReview }) {
   if (error) {
     return (
       <div className="pt-12">
-        <p style={{ color: 'var(--accent)' }}>Queue error: {error}</p>
+        <p style={{ color: 'var(--accent)' }}>{copy.queueError}: {error}</p>
       </div>
     )
   }
@@ -39,20 +41,26 @@ export function Queue({ onReview }) {
   return (
     <div className="hog-fade pt-8 md:pt-12">
       <div className="flex items-baseline justify-between mb-8">
-        <h1 className="hog-serif text-[32px] italic">Review queue</h1>
+        <h1 className="hog-serif text-[32px] italic">{copy.queueTitle}</h1>
         <span className="text-[13px]" style={{ color: 'var(--ink-softer)' }}>
-          {items.length} pending
+          {items.length} {copy.pendingSuffix}
         </span>
       </div>
 
       {items.length === 0 ? (
         <p className="text-[15px]" style={{ color: 'var(--ink-softer)' }}>
-          Queue is empty. All caught up.
+          {copy.queueEmpty}
         </p>
       ) : (
         <div className="space-y-2">
           {items.map((item) => (
-            <QueueRow key={item.id} item={item} onReview={onReview} />
+            <QueueRow
+              key={item.id}
+              item={item}
+              onReview={onReview}
+              copy={copy}
+              dateLocale={dateLocale}
+            />
           ))}
         </div>
       )}
@@ -60,7 +68,7 @@ export function Queue({ onReview }) {
   )
 }
 
-function QueueRow({ item, onReview }) {
+function QueueRow({ item, onReview, copy, dateLocale }) {
   const urgent  = item.days_left !== null && item.days_left <= 7
   const overdue = item.days_left !== null && item.days_left < 0
 
@@ -77,7 +85,7 @@ function QueueRow({ item, onReview }) {
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-[15px] font-medium truncate" style={{ color: 'var(--ink)' }}>
-            {item.applicant_name ?? 'Unknown applicant'}
+            {item.applicant_name ?? copy.unknownApplicant}
           </span>
           <span
             className="text-[11px] px-2 py-0.5 shrink-0"
@@ -87,7 +95,7 @@ function QueueRow({ item, onReview }) {
           </span>
         </div>
         <div className="text-[12px]" style={{ color: 'var(--ink-softer)' }}>
-          {item.disaster_code ?? '—'} · Case {item.id.slice(0, 8).toUpperCase()}
+          {item.disaster_code ?? '—'} · {copy.caseShort.replace('{id}', item.id.slice(0, 8).toUpperCase())}
         </div>
       </div>
 
@@ -102,13 +110,13 @@ function QueueRow({ item, onReview }) {
               : <Clock size={12} aria-hidden="true" />
             }
             {overdue
-              ? 'Overdue'
-              : `${item.days_left}d left`
+              ? copy.overdue
+              : copy.daysLeftShort.replace('{n}', item.days_left)
             }
           </div>
         )}
         <div className="text-[11px] mt-1" style={{ color: 'var(--ink-softer)' }}>
-          {new Date(item.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          {new Date(item.updated_at).toLocaleDateString(dateLocale, { month: 'short', day: 'numeric' })}
         </div>
       </div>
     </button>

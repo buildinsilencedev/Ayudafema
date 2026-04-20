@@ -20,7 +20,7 @@ import { Button, OutlineButton } from '../../components/Button.jsx'
 import { ReviewSidebar } from '../../components/admin/ReviewSidebar.jsx'
 import { supabase } from '../../lib/supabase.js'
 
-export function ReviewCase({ caseId, onBack, onApproved }) {
+export function ReviewCase({ caseId, onBack, onApproved, t }) {
   const [caseData,  setCaseData]  = useState(null)
   const [draft,     setDraft]     = useState(null)
   const [loading,   setLoading]   = useState(true)
@@ -29,6 +29,7 @@ export function ReviewCase({ caseId, onBack, onApproved }) {
   const [editedEs,  setEditedEs]  = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error,     setError]     = useState(null)
+  const copy = t.admin
 
   useEffect(() => {
     if (!caseId) return
@@ -129,12 +130,16 @@ export function ReviewCase({ caseId, onBack, onApproved }) {
     return (
       <div className="pt-8">
         <button type="button" onClick={onBack} className="hog-btn-ghost text-sm mb-4 flex items-center gap-2">
-          <ArrowLeft size={14} aria-hidden="true" /> Back
+          <ArrowLeft size={14} aria-hidden="true" /> {copy.backLabel}
         </button>
-        <p style={{ color: 'var(--accent)' }}>Case or draft not found.</p>
+        <p style={{ color: 'var(--accent)' }}>{copy.caseOrDraftMissing}</p>
       </div>
     )
   }
+
+  const caseHeader = copy.caseHeader
+    .replace('{id}', caseId.slice(0, 8).toUpperCase())
+    .replace('{v}', draft.version)
 
   return (
     <div className="hog-fade pt-6">
@@ -142,10 +147,10 @@ export function ReviewCase({ caseId, onBack, onApproved }) {
       <div className="flex items-center justify-between mb-6">
         <button type="button" onClick={onBack} className="hog-btn-ghost text-sm flex items-center gap-2">
           <ArrowLeft size={14} aria-hidden="true" />
-          Queue
+          {copy.backToQueue}
         </button>
         <span className="text-[12px]" style={{ color: 'var(--ink-softer)' }}>
-          Case {caseId.slice(0, 8).toUpperCase()} · Draft v{draft.version}
+          {caseHeader}
         </span>
       </div>
 
@@ -155,7 +160,7 @@ export function ReviewCase({ caseId, onBack, onApproved }) {
         {/* Left: draft EN preview (what FEMA receives) */}
         <div>
           <p className="text-[10px] uppercase tracking-widest mb-3" style={{ color: 'var(--ink-softer)' }}>
-            English draft (sent to FEMA)
+            {copy.englishDraftHeader}
           </p>
           <div
             className="text-[13px] leading-relaxed whitespace-pre-wrap p-4 border"
@@ -166,36 +171,36 @@ export function ReviewCase({ caseId, onBack, onApproved }) {
               maxHeight:   '70vh',
               overflowY:   'auto',
             }}
-            aria-label="English appeal draft"
+            aria-label={copy.englishDraftAria}
           >
-            {draft.body_en ?? '(no English body)'}
+            {draft.body_en ?? copy.englishDraftEmpty}
           </div>
         </div>
 
         {/* Center: ES draft (editable when requesting changes) */}
         <div>
           <p className="text-[10px] uppercase tracking-widest mb-3" style={{ color: 'var(--ink-softer)' }}>
-            Spanish draft (applicant copy)
+            {copy.spanishDraftHeader}
           </p>
           <textarea
             value={editedEs}
             onChange={(e) => setEditedEs(e.target.value)}
             readOnly={action !== 'request_changes'}
-            aria-label="Spanish appeal draft"
+            aria-label={copy.spanishDraftAria}
             className="w-full text-[13px] leading-relaxed p-4 border resize-none"
             style={{
               borderColor: action === 'request_changes' ? 'var(--ink)' : 'var(--rule)',
               color:       'var(--ink)',
               fontFamily:  'var(--font-mono)',
               height:      '70vh',
-              background:  action === 'request_changes' ? 'transparent' : 'transparent',
+              background:  'transparent',
             }}
           />
         </div>
 
         {/* Right: sidebar */}
         <div>
-          <ReviewSidebar caseData={caseData} draft={draft} />
+          <ReviewSidebar caseData={caseData} draft={draft} t={t} />
         </div>
       </div>
 
@@ -213,13 +218,13 @@ export function ReviewCase({ caseId, onBack, onApproved }) {
         {action === null && (
           <div className="flex flex-col md:flex-row gap-3">
             <Button onClick={() => setAction('approve')} disabled={submitting}>
-              <Check size={14} aria-hidden="true" /> Approve
+              <Check size={14} aria-hidden="true" /> {copy.approve}
             </Button>
             <OutlineButton onClick={() => setAction('request_changes')}>
-              <MessageSquare size={14} aria-hidden="true" /> Request changes
+              <MessageSquare size={14} aria-hidden="true" /> {copy.requestChanges}
             </OutlineButton>
             <OutlineButton onClick={() => setAction('reject')}>
-              <X size={14} aria-hidden="true" /> Reject
+              <X size={14} aria-hidden="true" /> {copy.reject}
             </OutlineButton>
           </div>
         )}
@@ -229,16 +234,16 @@ export function ReviewCase({ caseId, onBack, onApproved }) {
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Optional notes for the record…"
+              placeholder={copy.approveNotesPlaceholder}
               rows={3}
               className="w-full px-4 py-3 text-[14px] border resize-none bg-transparent"
               style={{ borderColor: 'var(--rule)', color: 'var(--ink)' }}
             />
             <div className="flex gap-3">
               <Button onClick={handleApprove} disabled={submitting}>
-                {submitting ? 'Approving…' : 'Confirm approve'}
+                {submitting ? copy.approving : copy.confirmApprove}
               </Button>
-              <OutlineButton onClick={() => setAction(null)}>Cancel</OutlineButton>
+              <OutlineButton onClick={() => setAction(null)}>{copy.cancel}</OutlineButton>
             </div>
           </div>
         )}
@@ -248,23 +253,23 @@ export function ReviewCase({ caseId, onBack, onApproved }) {
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Describe what needs to change (required)…"
+              placeholder={copy.requestChangesPlaceholder}
               required
               rows={4}
               className="w-full px-4 py-3 text-[14px] border resize-none bg-transparent"
               style={{ borderColor: 'var(--rule)', color: 'var(--ink)' }}
             />
             <p className="text-[12px]" style={{ color: 'var(--ink-softer)' }}>
-              You can also edit the Spanish draft above before submitting.
+              {copy.editHint}
             </p>
             <div className="flex gap-3">
               <Button
                 onClick={handleRequestChanges}
                 disabled={submitting || !notes.trim()}
               >
-                {submitting ? 'Submitting…' : 'Send feedback'}
+                {submitting ? copy.submitting : copy.sendFeedback}
               </Button>
-              <OutlineButton onClick={() => setAction(null)}>Cancel</OutlineButton>
+              <OutlineButton onClick={() => setAction(null)}>{copy.cancel}</OutlineButton>
             </div>
           </div>
         )}
@@ -274,7 +279,7 @@ export function ReviewCase({ caseId, onBack, onApproved }) {
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Reason for rejection (required)…"
+              placeholder={copy.rejectPlaceholder}
               required
               rows={4}
               className="w-full px-4 py-3 text-[14px] border resize-none bg-transparent"
@@ -286,9 +291,9 @@ export function ReviewCase({ caseId, onBack, onApproved }) {
                 disabled={submitting || !notes.trim()}
                 style={{ background: 'var(--accent)', color: '#fff' }}
               >
-                {submitting ? 'Rejecting…' : 'Confirm reject'}
+                {submitting ? copy.rejecting : copy.confirmReject}
               </Button>
-              <OutlineButton onClick={() => setAction(null)}>Cancel</OutlineButton>
+              <OutlineButton onClick={() => setAction(null)}>{copy.cancel}</OutlineButton>
             </div>
           </div>
         )}

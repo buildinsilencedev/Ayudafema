@@ -38,7 +38,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-/** Citations that must appear in every ownership-appeal draft. */
+/** Base-framework citations that must appear in every FEMA IA appeal draft. */
 const REQUIRED_CITATIONS = [
   '44 CFR § 206.111',
   'IAPPG v1.1',
@@ -96,18 +96,38 @@ Deno.serve(async (req) => {
     const caseForRouting = { ...caseRow, evidence_profile: evidenceProfile }
 
     // ── 3. RAG retrieval ────────────────────────────────────────────────────
+    // Query is built from parsed letter fields so it adapts to any denial
+    // code — not only 120. draft_quality reports whether we actually
+    // retrieved code-specific passages or fell back to the base framework.
+    const denialCode = caseRow.denial_code ?? 'unknown'
+    const denialReasonText = caseRow.denial_reason_text ?? `FEMA denial code ${denialCode}`
     const ragQuery = [
-      `FEMA denial code 120 ownership verification Puerto Rico`,
-      caseRow.denial_code && `denial code ${caseRow.denial_code}`,
-      altDocOnly && `alternative ownership documentation sworn affidavit`,
+      `FEMA Individual Assistance appeal Puerto Rico`,
+      `denial code ${denialCode}`,
+      caseRow.denial_reason_text,
+      altDocOnly && `alternative documentation sworn affidavit`,
     ].filter(Boolean).join(' ')
 
     let ragContext = ''
+    let draftQuality: 'code_specific' | 'general_framework' = 'general_framework'
     try {
       const chunks = await retrieveChunks(ragQuery, 8)
-      ragContext = formatContext(chunks)
+      if (chunks && chunks.length > 0) {
+        ragContext = formatContext(chunks)
+        // If any retrieved chunk mentions the denial code explicitly, treat
+        // the draft as code-specific; otherwise it is a general-framework
+        // draft and attorneys should scrutinize accordingly.
+        const codeNeedle = String(denialCode).toLowerCase()
+        const mentionsCode = chunks.some((c: { content?: string; chunk?: string; text?: string }) => {
+          const body = (c.content ?? c.chunk ?? c.text ?? '').toLowerCase()
+          return codeNeedle !== 'unknown' && body.includes(codeNeedle)
+        })
+        draftQuality = mentionsCode ? 'code_specific' : 'general_framework'
+      } else {
+        ragContext = FALLBACK_CONTEXT
+      }
     } catch (ragErr) {
-      // RAG is best-effort — continue with empty context if embeddings fail
+      // RAG is best-effort — continue with fallback context if embeddings fail
       console.warn('[draftAppeal] RAG failed, proceeding without context:', ragErr)
       ragContext = FALLBACK_CONTEXT
     }
@@ -132,6 +152,8 @@ Deno.serve(async (req) => {
       disasterCode:     caseRow.disaster_code     ?? 'DR-XXXX-PR',
       disasterName:     caseRow.disaster_name     ?? '[Desastre]',
       denialLetterDate: letterDateEs,
+      denialCode:       String(denialCode),
+      denialReasonText: denialReasonText,
       evidenceSummary:  evidenceSummaryEs,
       ragContext,
     }
@@ -140,6 +162,8 @@ Deno.serve(async (req) => {
       disasterCode:     caseRow.disaster_code     ?? 'DR-XXXX-PR',
       disasterName:     caseRow.disaster_name     ?? '[Disaster]',
       denialLetterDate: letterDateEn,
+      denialCode:       String(denialCode),
+      denialReasonText: denialReasonText,
       evidenceSummary:  evidenceSummaryEn,
       ragContext,
     }
@@ -195,11 +219,12 @@ Deno.serve(async (req) => {
     const { data: draft, error: draftErr } = await supabase
       .from('drafts')
       .insert({
-        case_id:  caseId,
+        case_id:       caseId,
         version,
-        body_es:  bodyEs,
-        body_en:  bodyEn,
+        body_es:       bodyEs,
+        body_en:       bodyEn,
         model,
+        draft_quality: draftQuality,
       })
       .select()
       .single()
@@ -213,9 +238,10 @@ Deno.serve(async (req) => {
       .eq('id', caseId)
 
     return new Response(JSON.stringify({
-      draftId:    draft.id,
-      version:    draft.version,
+      draftId:      draft.id,
+      version:      draft.version,
       model,
+      draftQuality,
       citationCheck: {
         required: REQUIRED_CITATIONS,
         missing:  missingCitations,

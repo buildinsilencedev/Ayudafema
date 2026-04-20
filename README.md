@@ -58,20 +58,18 @@ Ayuda Legal org email you're willing to share across your ops team.
 ### Tools on your laptop
 
 - **Node 20+** — https://nodejs.org
-- **Deno 1.40+** — https://deno.com (only needed for the corpus ingest)
 - **Supabase CLI** — `brew install supabase/tap/supabase` or see
   https://supabase.com/docs/guides/cli
 - **Git** — for cloning and pushing
 
-You do not need Docker, Railway, or n8n for Phase 1.
+You do not need Deno, Docker, Railway, or n8n for Phase 1.
 
 ---
 
-## Phase 1 deploy (~1 hour)
+## Phase 1 deploy (~30 minutes)
 
-Every step is a single command or a documented dashboard action. If you hit
-anything that requires judgment calls the docs don't cover, stop and email
-the La Mano warranty contact in [`docs/RUNBOOK.md`](./docs/RUNBOOK.md).
+Non-technical operators: follow [`docs/DESPLIEGUE.md`](./docs/DESPLIEGUE.md)
+instead — same steps, fully in Spanish, zero command-line context assumed.
 
 ### 1. Clone and install
 
@@ -82,105 +80,59 @@ npm ci
 cp .env.example .env.local
 ```
 
-### 2. Create the Supabase project
+### 2. Fill in `.env.local`
 
-1. In the Supabase dashboard, create a new project. Pick the region closest to
-   Puerto Rico (US East is fine).
-2. Open *Project Settings → API* and copy these three values into
-   `.env.local`:
-   - `VITE_SUPABASE_URL` ← Project URL
-   - `VITE_SUPABASE_ANON_KEY` ← anon / public key
-   - `SUPABASE_SERVICE_ROLE_KEY` ← service_role key (keep this secret)
-3. Link the CLI to the project:
-   ```bash
-   supabase login
-   supabase link --project-ref <your-project-ref>
-   ```
+Every value has the exact dashboard path next to it. Open each service
+in a tab and copy values across. Required: Supabase URL + anon key +
+service-role key, OpenRouter key, OpenAI key, Twilio SID + token + PR
+number + Messaging Service SID.
 
-### 3. Push the database schema
+### 3. One command deploys the whole backend
 
 ```bash
-npm run db:push
+supabase login    # first time only
+npm run bootstrap
 ```
 
-This applies all four migrations in `supabase/migrations/`: tables, RLS
-policies, pgvector for RAG, and `pg_cron` jobs for SMS reminders + the
-90-day purge.
+`bootstrap` prompts for your Supabase project-ref once, then runs
+migrations, pushes secrets, deploys all six edge functions
+(`parseDenialLetter`, `draftAppeal`, `sendSMS`, `scheduleReminders`,
+`smsWebhook`, `purgeOldCases`), seeds the RAG knowledge base, and runs
+the verify script. Safe to re-run.
 
-### 4. Add LLM and SMS keys
+### 4. Point Twilio inbound at your webhook
 
-Fill these in `.env.local` — the file tells you exactly where each value
-lives in each dashboard:
-
-- `OPENROUTER_API_KEY`
-- `OPENAI_API_KEY`
-- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`, `TWILIO_MESSAGING_SERVICE_SID`
-
-Twilio setup: buy one PR-area number, create a Messaging Service, and add the
-number as a sender. You'll wire the inbound webhook in step 7.
-
-Then push the backend secrets to Supabase:
-
-```bash
-npm run functions:secrets
-```
-
-### 5. Deploy the edge functions
-
-```bash
-npm run functions:deploy
-```
-
-This deploys all six functions:
-`parseDenialLetter`, `draftAppeal`, `sendSMS`, `scheduleReminders`,
-`smsWebhook`, `purgeOldCases`.
-
-### 6. Seed the RAG knowledge base
-
-```bash
-npm run corpus:ingest
-```
-
-Embeds the FEMA regulations, denial-code playbooks, and sample appeals in
-`content/corpus/` into `knowledge_base`. One-time ~$0.01 OpenAI charge.
-Re-run with `-- --clear` to wipe and re-seed after corpus updates.
-
-### 7. Point Twilio inbound at your webhook
-
-In the Twilio console, open *Messaging → Services → your service →
-Integration* and set the inbound webhook to:
+Twilio console → *Messaging → Services → your service → Integration*
+→ inbound webhook:
 
 ```
 https://<your-project-ref>.functions.supabase.co/smsWebhook
 ```
 
-Method: `HTTP POST`. This routes STOP / HELP / CASE replies to the bilingual
-handler.
+Method `HTTP POST`. Routes STOP / HELP / CASE replies to the
+bilingual handler.
 
-### 8. Deploy the frontend to Cloudflare Pages
+### 5. Deploy the frontend to Cloudflare Pages
 
-1. Cloudflare dashboard → Pages → Create → Connect to Git → pick this repo.
-2. Build settings:
-   - Framework preset: **Vite**
-   - Build command: `npm run build`
-   - Build output: `dist`
-3. Environment variables: add `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`,
-   `VITE_SITE_URL` (the Pages URL), and `VITE_SENTRY_DSN` if you set up
-   Sentry.
-4. Deploy. Add the production domain under *Custom domains* once DNS is
-   ready.
-5. Back in Supabase → *Authentication → URL Configuration*, add your Pages
-   URL to the allow-list so magic-link sign-in redirects work.
+1. Cloudflare → Pages → Create → Connect to Git → pick this repo.
+2. Build settings: preset Vite, build `npm run build`, output `dist`.
+3. Environment variables: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`,
+   `VITE_SITE_URL` (the Pages URL), `VITE_SENTRY_DSN` (optional).
+4. Deploy. In Supabase → *Authentication → URL Configuration*, add the
+   Pages URL to the allow-list so magic-link sign-in works.
 
-### 9. Verify
+### 6. Turn on Supabase keepalive
 
-```bash
-npm run verify
-```
+In your GitHub fork: *Settings → Secrets and variables → Actions* →
+add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` with the same
+values from `.env.local`. Open the *Actions* tab, pick
+*Supabase keepalive*, and run it once manually. It will now run Mon
+and Thu at 13:00 UTC to keep the free-tier project from pausing.
 
-Expect all green. The script confirms: Supabase reachable, RLS on, corpus
-seeded, edge functions responsive, Twilio number registered. Any red flags
-point you at the relevant section of `docs/RUNBOOK.md`.
+### 7. Gate launch on the pre-launch checklist
+
+Do not open the tool to real applicants until every item in
+[`docs/PRE-LAUNCH.md`](./docs/PRE-LAUNCH.md) is signed off.
 
 ---
 
@@ -217,10 +169,10 @@ skips a tick, and webhook orchestration for heavier flows later. See
    ```
    Full walkthrough and SLA expectations in
    [`docs/ATTORNEY-ONBOARDING.md`](./docs/ATTORNEY-ONBOARDING.md).
-2. **Walk a test case end-to-end** — use the sample Fiona denial in
-   `content/samples/` to run through upload → diagnosis → draft → attorney
-   review → submit. Confirm the "attorney-reviewed" badge only appears after
-   signoff.
+2. **Walk a test case end-to-end** — use
+   `content/samples/fiona-ownership-denial.txt` to run through upload →
+   diagnosis → draft → attorney review → submit. Confirm the
+   "attorney-reviewed" badge only appears after signoff.
 3. **Hook up Sentry alerts** if you enabled it, and subscribe the ops
    on-call address.
 4. **Transfer ownership** of every account to the Ayuda Legal org using the
@@ -273,15 +225,16 @@ ayudafema/
 │   ├── content/copy/       # ES + EN copy, parity-tested
 │   └── content/templates/  # Appeal letter templates
 ├── supabase/
-│   ├── migrations/         # 0001_init → 0004_cron
+│   ├── migrations/         # 0001_init → 0005_draft_quality
 │   └── functions/          # 6 edge functions + _shared utilities
 ├── n8n/
 │   ├── docker-compose.yml  # Phase 2 only
 │   └── workflows/          # 5 JSON workflows
 ├── content/corpus/         # FEMA regs, denial playbooks, sample appeals
-├── scripts/                # set-secrets.sh, n8n-import.sh,
-│                           #   verify-deployment.mjs, ingest-corpus.ts
-├── docs/                   # HANDOFF, RUNBOOK, ARCHITECTURE,
+├── scripts/                # bootstrap.sh, set-secrets.sh, n8n-import.sh,
+│                           #   verify-deployment.mjs, ingest-corpus.mjs
+├── docs/                   # DESPLIEGUE (ES), PRE-LAUNCH / ANTES-DE-LANZAR,
+│                           #   HANDOFF, RUNBOOK, ARCHITECTURE,
 │                           #   ATTORNEY-ONBOARDING, COST-MODEL
 ├── .env.example            # Annotated: every var tells you where to find it
 ├── railway.json            # Phase 2 only

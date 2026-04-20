@@ -53,7 +53,7 @@ Estimates as of April 2026. Update before each major milestone.
 - OCR model costs assume all cases upload an image. ~30% may use ManualEntry (no OCR cost).
 - Draft costs assume one draft per case. Re-drafts (attorney requests changes) increase by ~25%.
 - Opus is ~10× more expensive than Sonnet. Keep `pickModel()` conservative to control costs.
-- Embedding costs (ingest-corpus.ts) are one-time: ~$0.01 for initial corpus, ~$0.001/refresh.
+- Embedding costs (ingest-corpus.mjs) are one-time: ~$0.01 for initial corpus, ~$0.001/refresh.
 - Better Stack + Sentry add ~$30/mo at scale (included in Team plans for small volumes).
 
 ## Cost control levers
